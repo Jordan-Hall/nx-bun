@@ -39,7 +39,6 @@ export class TaskTimingsLifeCycle implements LifeCycle {
   }
 
   endCommand(): void {
-    console.log('Task Execution Timings:');
     const timings = {};
     Object.keys(this.timings).forEach((p) => {
       const t = this.timings[p];

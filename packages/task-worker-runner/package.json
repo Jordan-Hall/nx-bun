@@ -1,5 +1,5 @@
 {
-  "name": "@nx-bun/task-runner",
+  "name": "@nx-bun/task-worker-runner",
   "version": "0.0.1",
   "type": "commonjs",
   "main": "./index.cjs",

@@ -1,7 +1,7 @@
 {
-  "name": "task-runner",
+  "name": "task-worker-runner",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/task-runner/src",
+  "sourceRoot": "packages/task-worker-runner/src",
   "projectType": "library",
   "targets": {
     "build": {
@@ -10,11 +10,11 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/packages/task-runner",
-        "main": "packages/task-runner/src/index.ts",
-        "tsConfig": "packages/task-runner/tsconfig.lib.json",
+        "outputPath": "dist/packages/task-worker-runner",
+        "main": "packages/task-worker-runner/src/index.ts",
+        "tsConfig": "packages/task-worker-runner/tsconfig.lib.json",
         "assets": [
-          "packages/task-runner/*.md"
+          "packages/task-worker-runner/*.md"
         ],
         "generatePackageJson": true,
         "format": [
@@ -24,7 +24,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs task-runner {args.ver} {args.tag}",
+      "command": "node tools/scripts/publish.mjs task-worker-runner {args.ver} {args.tag}",
       "dependsOn": [
         "build"
       ]
@@ -36,8 +36,8 @@
       ],
       "options": {
         "lintFilePatterns": [
-          "packages/task-runner/**/*.ts",
-          "packages/task-runner/package.json"
+          "packages/task-worker-runner/**/*.ts",
+          "packages/task-worker-runner/package.json"
         ]
       }
     },
@@ -47,7 +47,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "jestConfig": "packages/task-runner/jest.config.ts",
+        "jestConfig": "packages/task-worker-runner/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {

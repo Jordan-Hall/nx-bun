@@ -88,16 +88,16 @@ export async function executeCliAsync(args: string[], options: ExecOptions = {})
   //     }
   //   }
   // } else {
-    if (isNodeExecOptions(options)) {
+    // if (isNodeExecOptions(options)) {
       return spawn('bun', args, {
         cwd: options.cwd || workspaceRoot,
         env: {...process.env, ...(workerData || {})},
         windowsHide: true,
-        stdio: options.stdio || 'inherit',
+        stdio: (options as NodeExecOptions).stdio || 'inherit',
       })
-    }
+    // }
   // }
-  throw new Error("Unable to create child process.");
+  // throw new Error("Unable to create child process.");
 }
 
 export async function executeCliWithLogging(args: string[], options: ExecOptions = {}): Promise<boolean> {
