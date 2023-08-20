@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@nx-bun/task-runner": ["packages/task-runner/src/index.ts"],
       "nx-bun": ["packages/nx-bun/src/index.ts"]
     }
   },

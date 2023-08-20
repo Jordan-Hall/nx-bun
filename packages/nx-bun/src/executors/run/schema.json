@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "Bun Run executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "main": {
+      "type": "string",
+      "description": "The target file to run",
+      "x-priority": "important"
+    },
+    "watch": {
+      "type": "boolean",
+      "description": "To run a file in watch mode",
+      "default": false
+    },
+    "smol": {
+      "type": "boolean",
+      "description": "In memory-constrained environments, use the smol flag to reduce memory usage at a cost to performance.",
+      "default": false
+    }
+  },
+  "required": []
+}

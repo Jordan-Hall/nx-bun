@@ -1,6 +1,6 @@
 {
-  "name": "nx-bun",
-  "version": "0.0.1",
+  "name": "@nx-bun/nx",
+  "version": "0.0.4",
   "dependencies": {
     "@nx/devkit": "16.6.0",
     "tslib": "^2.3.0"
@@ -8,5 +8,6 @@
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
-  "generators": "./generators.json"
+  "generators": "./generators.json",
+  "executors": "./executors.json"
 }

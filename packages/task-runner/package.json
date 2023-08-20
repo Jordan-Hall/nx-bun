@@ -1,0 +1,10 @@
+{
+  "name": "@nx-bun/task-runner",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "./index.cjs",
+  "dependencies": {
+    "@swc/helpers": "~0.5.0"
+  },
+  "devDependencies": {}
+}

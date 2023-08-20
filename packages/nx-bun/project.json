@@ -47,7 +47,8 @@
         "lintFilePatterns": [
           "packages/nx-bun/**/*.ts",
           "packages/nx-bun/package.json",
-          "packages/nx-bun/generators.json"
+          "packages/nx-bun/generators.json",
+          "packages/nx-bun/executors.json"
         ]
       }
     },

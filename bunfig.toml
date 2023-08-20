@@ -1,0 +1,23 @@
+[install]
+# set default registry as a string
+registry = "http://localhost:4873"
+# set a token
+# registry = { token = "secretVerdaccioToken", url = "http://localhost:4873" }
+# set a username/password
+# registry = "https://username:password@registry.npmjs.org"
+
+
+
+[install.scopes]
+"@nx-bun" = { token = "secretVerdaccioToken", url = "http://localhost:4873/" }
+"@nx" = { token = "secretVerdaccioToken", url = "http://localhost:4873/" }
+
+
+
+[debug]
+# When navigating to a blob: or src: link, open the file in your editor
+# If not, it tries $EDITOR or $VISUAL
+# If that still fails, it will try Visual Studio Code, then Sublime Text, then a few others
+# This is used by Bun.openInEditor()
+editor = "codium-insiders"
+logLevel = "debug" # "debug", "warn", "error"
