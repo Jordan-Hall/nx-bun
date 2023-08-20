@@ -1,4 +1,4 @@
-import { TasksRunner, TaskStatus } from './tasks-runner';
+import { TasksRunner, TaskStatus } from './task-worker-runner';
 import { join } from 'path';
 import { workspaceRoot } from 'nx/src/utils/workspace-root';
 import { NxArgs } from 'nx/src/utils/command-line-utils';

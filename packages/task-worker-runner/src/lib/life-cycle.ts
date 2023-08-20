@@ -1,4 +1,4 @@
-import { TaskStatus } from './tasks-runner';
+import { TaskStatus } from './task-worker-runner';
 import { Task } from 'nx/src/config/task-graph';
 
 export interface TaskResult {

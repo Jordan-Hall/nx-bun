@@ -3,7 +3,7 @@ import { TaskHasher } from 'nx/src/hasher/task-hasher';
 import { ForkedProcessTaskRunner } from './forked-process-task-worker-runner';
 import { Cache } from './cache';
 import { DefaultTasksRunnerOptions } from './default-tasks-runner';
-import { TaskStatus } from './tasks-runner';
+import { TaskStatus } from './task-worker-runner';
 import {
   calculateReverseDeps,
   getExecutorForTask,

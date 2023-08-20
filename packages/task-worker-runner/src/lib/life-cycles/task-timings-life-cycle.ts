@@ -1,6 +1,6 @@
 import { Task } from 'nx/src/config/task-graph';
 import { LifeCycle } from '../life-cycle';
-import { TaskStatus } from '../tasks-runner';
+import { TaskStatus } from '../task-worker-runner';
 
 export class TaskTimingsLifeCycle implements LifeCycle {
   private timings: {

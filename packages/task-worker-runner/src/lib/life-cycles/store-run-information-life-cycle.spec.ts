@@ -1,5 +1,5 @@
 import { Task } from 'nx/src/config/task-graph';
-import { TaskStatus } from '../tasks-runner';
+import { TaskStatus } from '../task-worker-runner';
 import { StoreRunInformationLifeCycle } from './store-run-information-life-cycle';
 describe('StoreRunInformationLifeCycle', () => {
   it.only('should handle startTime/endTime in TaskResults', () => {

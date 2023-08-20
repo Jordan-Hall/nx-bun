@@ -1,5 +1,5 @@
 import { output } from 'nx/src/utils/output';
-import { TaskStatus } from '../tasks-runner';
+import { TaskStatus } from '../task-worker-runner';
 import { getPrintableCommandArgsForTask } from '../utils';
 import type { LifeCycle } from '../life-cycle';
 import { Task } from 'nx/src/config/task-graph';

@@ -1,7 +1,7 @@
 import { output } from 'nx/src/utils/output';
 import { getPrintableCommandArgsForTask } from '../utils';
 import type { LifeCycle } from '../life-cycle';
-import { TaskStatus } from '../tasks-runner';
+import { TaskStatus } from '../task-worker-runner';
 
 export class EmptyTerminalOutputLifeCycle implements LifeCycle {
   printTaskTerminalOutput(

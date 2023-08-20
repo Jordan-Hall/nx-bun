@@ -1,5 +1,5 @@
 import { LifeCycle, TaskMetadata } from '../life-cycle';
-import { TaskStatus } from '../tasks-runner';
+import { TaskStatus } from '../task-worker-runner';
 
 import { performance } from 'perf_hooks';
 import { join } from 'path';

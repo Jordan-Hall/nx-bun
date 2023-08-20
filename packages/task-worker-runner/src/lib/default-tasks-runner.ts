@@ -1,4 +1,4 @@
-import { TasksRunner, TaskStatus } from './tasks-runner';
+import { TasksRunner, TaskStatus } from './task-worker-runner';
 import { TaskOrchestrator } from './task-orchestrator';
 import { TaskHasher } from 'nx/src/hasher/task-hasher';
 import { LifeCycle } from './life-cycle';

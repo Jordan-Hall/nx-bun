@@ -4,7 +4,7 @@ import { EOL } from 'os';
 import * as readline from 'readline';
 import { output } from 'nx/src/utils/output';
 import type { LifeCycle } from '../life-cycle';
-import type { TaskStatus } from '../tasks-runner';
+import type { TaskStatus } from '../task-worker-runner';
 import { Task } from 'nx/src/config/task-graph';
 import { prettyTime } from './pretty-time';
 import { formatFlags, formatTargetsAndProjects } from './formatting-utils';

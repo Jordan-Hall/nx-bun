@@ -1,4 +1,4 @@
-import { TasksRunner } from './tasks-runner';
+import { TasksRunner } from './task-worker-runner';
 import { getRunner } from './run-command';
 import { NxJsonConfiguration } from 'nx/src/config/nx-json';
 
