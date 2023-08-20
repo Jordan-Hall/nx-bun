@@ -79,7 +79,7 @@ export class ForkedProcessTaskRunner {
           }
         });
 
-        p.on('message', (message: BatchMessage) => {
+        p.on('message', (message: BatchMessage | any) => {
           debugger;
           switch (message.type) {
             case BatchMessageType.CompleteBatchExecution: {
@@ -90,8 +90,9 @@ export class ForkedProcessTaskRunner {
               break;
             }
             default: {
-              // Re-emit any non-batch messages from the task process
-              if (process.send) {
+              if (['stdin', 'stdout', 'stderr'].includes(message?.type)) {
+                console.log(message?.message)
+              } else if (process.send) {
                 process.send(message);
               } else {
                 p.postMessage(message)
@@ -150,10 +151,12 @@ export class ForkedProcessTaskRunner {
 
         // Re-emit any messages from the task process
         p.on('message', (message) => {
-          debugger;
-          p.postMessage(message)
+          if (['stdin', 'stdout', 'stderr'].includes(message?.type)) {
+            console.log(message.message)
+          } else {
+            p.postMessage(message)
+          }
         });
-        debugger;
         // Send message to run the executor
         p.postMessage({
           targetDescription: task.target,
@@ -166,30 +169,42 @@ export class ForkedProcessTaskRunner {
           if (process.env.NX_PREFIX_OUTPUT === 'true') {
             const color = getColor(task.target.project);
             const prefixText = `${task.target.project}:`;
-
-            p.stdout
-              .pipe(
-                logClearLineToPrefixTransformer(color.bold(prefixText) + ' ')
-              )
-              .pipe(logTransformer({ tag: color.bold(prefixText) }))
-              .pipe(process.stdout);
-            p.stderr
+            if (p.stdout) {
+              p.stdout
+                .pipe(
+                  logClearLineToPrefixTransformer(color.bold(prefixText) + ' ')
+                )
+                .pipe(logTransformer({ tag: color.bold(prefixText) }))
+                .pipe(process.stdout);
+            }
+            if (p.stderr) {
+              p.stderr
               .pipe(logClearLineToPrefixTransformer(color(prefixText) + ' '))
               .pipe(logTransformer({ tag: color(prefixText) }))
               .pipe(process.stderr);
+            }
+
           } else {
-            p.stdout.pipe(logTransformer()).pipe(process.stdout);
-            p.stderr.pipe(logTransformer()).pipe(process.stderr);
+            if (p.stdout) {
+              p.stdout.pipe(logTransformer()).pipe(process.stdout);
+            }
+            if (p.stderr) {
+              p.stderr.pipe(logTransformer()).pipe(process.stderr);
+            }
           }
         }
 
         let outWithErr = [];
-        p.stdout.on('data', (chunk) => {
-          outWithErr.push(chunk.toString());
-        });
-        p.stderr.on('data', (chunk) => {
-          outWithErr.push(chunk.toString());
-        });
+        if (p.stdout) {
+          p.stdout.on('data', (chunk) => {
+            outWithErr.push(chunk.toString());
+          });
+        }
+        if (p.stderr) {
+          p.stderr.on('data', (chunk) => {
+            outWithErr.push(chunk.toString());
+          });
+        }
 
         p.on('exit', (code, signal) => {
           this.processes.delete(p);
@@ -247,7 +262,9 @@ export class ForkedProcessTaskRunner {
 
         // Re-emit any messages from the task process
         p.on('message', (message) => {
-          if (process.send) {
+          if (['stdin', 'stdout', 'stderr'].includes(message?.type)) {
+            console.log(message.message)
+          } else if (process.send) {
             process.send(message);
           } else {
             p.postMessage(message)

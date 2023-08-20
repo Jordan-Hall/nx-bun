@@ -1,6 +1,8 @@
 import { createAsyncIterable } from '@nx/devkit/src/utils/async-iterable';
 import { RunExecutorSchema } from './schema';
 import { executeCliAsync, UnifiedChildProcess, isBunSubprocess } from '../../utils/bun-cli';
+import { parentPort, workerData, } from 'worker_threads';
+import { Readable } from 'node:stream';
 type Signal = 'SIGTERM' | 'SIGINT' | 'SIGHUP' | 'SIGKILL';  // Define more signals as needed
 
 async function killCurrentProcess(childProcess: UnifiedChildProcess, signal: Signal) {
@@ -21,7 +23,37 @@ async function killCurrentProcess(childProcess: UnifiedChildProcess, signal: Sig
 export default async function* runExecutor(options: RunExecutorSchema) {
   const args = createArgs(options);
   yield* createAsyncIterable(async ({ next, done }) => {
-    const runningBun = await executeCliAsync(args, { stdio: 'inherit' });
+    const runningBun = await executeCliAsync(args, { stdio: 'pipe', stderr: 'pipe', stdin: 'pipe', stdout: 'pipe' });
+
+    if (runningBun.stdout) {
+      if (parentPort) {
+        const text = await new Response(runningBun.stdout as  ReadableStream).text();
+        parentPort.postMessage({type: 'stdout', message: text})
+      } else {
+        (runningBun.stdout as Readable).on('data', (data) => {
+          if (parentPort) {
+            parentPort.postMessage({type: 'stdout', message: data})
+          } else {
+            console.log(`stdout: ${data}`);
+          }
+        });
+      }
+    }
+
+    if (runningBun.stderr) {
+      if (parentPort) {
+        const text = await new Response(runningBun.stderr as  ReadableStream).text();
+        parentPort.postMessage({type: 'stderr', message: text})
+      } else {
+        (runningBun.stderr as Readable).on('data', (data) => {
+          if (parentPort) {
+            parentPort.postMessage({type: 'stderr', message: data})
+          } else {
+            console.log(`stderr: ${data}`);
+          }
+        });
+      }
+    }
 
     process.on('SIGTERM', async () => {
       await killCurrentProcess(runningBun, 'SIGTERM');

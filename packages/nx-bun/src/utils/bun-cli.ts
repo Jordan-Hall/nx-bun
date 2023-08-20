@@ -1,6 +1,7 @@
 import { stripIndents, workspaceRoot } from '@nx/devkit';
 import type { SpawnOptions, Subprocess } from 'bun';
-import { ChildProcess, spawn } from 'child_process';
+import { ChildProcess, spawn } from 'node:child_process';
+import { parentPort, workerData, } from 'worker_threads';
 
 // Detect environment
 const isBun = typeof Bun !== 'undefined';
@@ -71,30 +72,31 @@ export async function getBunVersion(): Promise<string | null> {
 }
 
 export async function executeCliAsync(args: string[], options: ExecOptions = {}): Promise<UnifiedChildProcess> {
-  if (isBun) {
-    if (isBunExecOptions(options)) {
-      const childProcess = Bun.spawn(['bun', ...args], {
-        cwd: options.cwd || workspaceRoot,
-        env: process.env,
-        stdin: options.stdin || 'ignore',
-        stdout: options.stdout || isBun ? 'pipe' : 'pipe',
-        stderr: options.stderr || isBun ? 'pipe' : 'pipe',
-      });
+  // TODO: Get bun spawn working. Cant get anything out of it
+  // if (isBun) {
+  //   if (isBunExecOptions(options)) {
+  //     const childProcess = Bun.spawn(['bun', ...args], {
+  //       cwd: options.cwd || workspaceRoot,
+  //       env: {...process.env, ...(workerData || {})},
+  //       stdin: options.stdin || 'ignore',
+  //       stdout: options.stdout || isBun ? 'pipe' : 'pipe',
+  //       stderr: options.stderr || isBun ? 'pipe' : 'pipe',
+  //     });
 
-      if (isBunSubprocess(childProcess)) {
-        return Promise.resolve(childProcess);
-      }
-    }
-  } else {
+  //     if (isBunSubprocess(childProcess)) {
+  //       return Promise.resolve(childProcess);
+  //     }
+  //   }
+  // } else {
     if (isNodeExecOptions(options)) {
       return spawn('bun', args, {
         cwd: options.cwd || workspaceRoot,
-        env: process.env,
+        env: {...process.env, ...(workerData || {})},
         windowsHide: true,
         stdio: options.stdio || 'inherit',
       })
     }
-  }
+  // }
   throw new Error("Unable to create child process.");
 }
 
@@ -106,7 +108,14 @@ export async function executeCliWithLogging(args: string[], options: ExecOptions
           const stdoutReader = (child.stdout as ReadableStream).getReader();
           stdoutReader.read().then(({ value, done }) => {
             if (!done && value) {
-              console.log(`stdout: ${new TextDecoder().decode(value)}`);
+              const stdout = new TextDecoder().decode(value)
+              if (parentPort) {
+                parentPort.postMessage({
+                  type: 'stdout',
+                  message: stdout
+                })
+              }
+              console.log(`stdout: ${stdout}`);
             }
           });
 
@@ -115,8 +124,15 @@ export async function executeCliWithLogging(args: string[], options: ExecOptions
         if (child.stderr) {
           const stderrReader = (child.stderr as ReadableStream).getReader();
           stderrReader.read().then(({ value, done }) => {
+            const stderr = new TextDecoder().decode(value)
             if (!done && value) {
-              console.error(`stderr: ${new TextDecoder().decode(value)}`);
+              if (parentPort) {
+                parentPort.postMessage({
+                  type: 'stdout',
+                  message: stderr
+                })
+              }
+              console.error(`stderr: ${stderr}`);
             }
           });
         }
@@ -130,10 +146,20 @@ export async function executeCliWithLogging(args: string[], options: ExecOptions
         });
       } else {
         child.stdout.on('data', (data) => {
+          if (parentPort) {
+            parentPort.postMessage({
+              type: 'stdout',
+              message: data
+            })
+          }
           console.log(`stdout: ${data}`);
         });
 
         child.stderr.on('data', (data) => {
+          parentPort.postMessage({
+            type: 'stderr',
+            message: data
+          })
           console.error(`stderr: ${data}`);
         });
 
