@@ -4,6 +4,10 @@
   "license": "MIT",
   "scripts": {},
   "private": true,
+  "repository": {
+    "url": "https://github.com/Jordan-Hall/nx-bun",
+    "type": "git"
+  },
   "dependencies": {
     "@nx/devkit": "16.7.2",
     "@swc/helpers": "~0.5.0",
