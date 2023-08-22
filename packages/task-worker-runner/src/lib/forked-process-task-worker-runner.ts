@@ -80,7 +80,6 @@ export class ForkedProcessTaskRunner {
         });
 
         p.on('message', (message: BatchMessage | any) => {
-          debugger;
           switch (message.type) {
             case BatchMessageType.CompleteBatchExecution: {
               res(message.results);
@@ -102,7 +101,6 @@ export class ForkedProcessTaskRunner {
         });
 
         // Start the tasks
-        debugger;
         p.postMessage({
           type: BatchMessageType.RunTasks,
           executorName,
@@ -270,7 +268,6 @@ export class ForkedProcessTaskRunner {
             p.postMessage(message)
           }
         });
-        debugger;
         // Send message to run the executor
         p.postMessage({
           targetDescription: task.target,

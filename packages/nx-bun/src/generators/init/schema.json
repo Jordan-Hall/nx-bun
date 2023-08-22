@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "Init",
+  "title": "Initilize @nx-bun/nx",
+  "description": "Setup the workspace to build bun projects. Bun must be installed prior to use the @nx-nx/nx plugin",
+  "type": "object",
+  "properties": {}
+}

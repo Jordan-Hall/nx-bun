@@ -1,16 +1,15 @@
 {
   "generators": {
-    "preset": {
-      "factory": "./src/generators/preset/generator",
-      "schema": "./src/generators/preset/schema.json",
-      "description": "preset generator",
-      "x-use-standalone-layout": true
-    },
     "create": {
       "factory": "./src/generators/create/generator",
       "schema": "./src/generators/create/schema.json",
       "description": "Use bun create generator and transform it instantly into nx-bun",
       "x-use-standalone-layout": true
+    },
+    "init": {
+      "factory": "./src/generators/init/generator",
+      "schema": "./src/generators/init/schema.json",
+      "description": "init generator"
     }
   }
 }

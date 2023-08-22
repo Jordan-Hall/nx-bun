@@ -93,7 +93,7 @@ export async function executeCliAsync(args: string[], options: ExecOptions = {})
         cwd: options.cwd || workspaceRoot,
         env: {...process.env, ...(workerData || {})},
         windowsHide: true,
-        stdio: (options as NodeExecOptions).stdio || 'inherit',
+        stdio: (options as NodeExecOptions).stdio || 'pipe',
       })
     // }
   // }
@@ -145,23 +145,27 @@ export async function executeCliWithLogging(args: string[], options: ExecOptions
           }
         });
       } else {
-        child.stdout.on('data', (data) => {
-          if (parentPort) {
+        if (child.stdout) {
+          child.stdout.on('data', (data) => {
+            if (parentPort) {
+              parentPort.postMessage({
+                type: 'stdout',
+                message: data
+              })
+            }
+            console.log(`stdout: ${data}`);
+          });
+        }
+
+        if (child.stderr) {
+          child.stderr.on('data', (data) => {
             parentPort.postMessage({
-              type: 'stdout',
+              type: 'stderr',
               message: data
             })
-          }
-          console.log(`stdout: ${data}`);
-        });
-
-        child.stderr.on('data', (data) => {
-          parentPort.postMessage({
-            type: 'stderr',
-            message: data
-          })
-          console.error(`stderr: ${data}`);
-        });
+            console.error(`stderr: ${data}`);
+          });
+        }
 
         child.on('close', (code) => {
           if (code !== 0) {

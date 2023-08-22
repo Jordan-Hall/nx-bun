@@ -28,7 +28,6 @@ async function runTasks(
   batchTaskGraph: TaskGraph,
   fullTaskGraph: TaskGraph
 ) {
-  debugger
   const input: Record<string, any> = {};
   const projectGraph = await createProjectGraphAsync();
   const projectsConfigurations =
@@ -102,15 +101,11 @@ async function runTasks(
   }
 }
 
-debugger;
-
 if (parentPort) {
-  debugger
   if (workerData) {
     process.env = {...process.env, ...workerData}
   }
   parentPort.on('message', async (message: BatchMessage) => {
-    debugger
     switch (message.type) {
       case BatchMessageType.RunTasks: {
         const results = await runTasks(
