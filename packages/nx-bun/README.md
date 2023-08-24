@@ -1,11 +1,3 @@
-# nx-bun
+# NX Plugin for Bun
 
-This library was generated with [Nx](https://nx.dev).
-
-## Building
-
-Run `nx build nx-bun` to build the library.
-
-## Running unit tests
-
-Run `nx test nx-bun` to execute the unit tests via [Jest](https://jestjs.io).
+This is an NX plugin that facilitates running [Bun](https://bun.sh) for your JavaScript or TypeScript programs.

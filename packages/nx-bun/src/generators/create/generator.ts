@@ -1,5 +1,4 @@
 import {
-  addProjectConfiguration,
   formatFiles,
   getWorkspaceLayout,
   joinPathFragments,
@@ -8,6 +7,7 @@ import {
   Tree,
   updateJson,
 } from '@nx/devkit';
+import { FsTree } from 'nx/src/generators/tree'
 import { CreateGeneratorSchema } from './schema';
 import { executeCliWithLogging } from '../../utils/bun-cli';
 import { join } from 'path';
@@ -15,9 +15,11 @@ import { NormalizedSchema } from './NormalizedSchema';
 import { addProjectFromScript } from './add-project';
 import * as semver from 'semver'
 import initGenerator from '../init/generator';
+import { readdirSync, rmSync } from 'fs';
+import { readFileIfExisting } from 'nx/src/utils/fileutils';
 
 export async function createGenerator(
-  tree: Tree,
+  tree: FsTree,
   options: CreateGeneratorSchema
 ) {
   await initGenerator(tree, {})
@@ -26,14 +28,28 @@ export async function createGenerator(
 
   const args = createArgs(opts)
   await executeCliWithLogging(args, {
-     stderr: 'inherit',
-     stdin: 'inherit',
-     stdio: 'inherit',
-     stdout: 'inherit'
+    stderr: 'inherit',
+    stdin: 'inherit',
+    stdio: 'inherit',
+    stdout: 'inherit'
   })
 
-  tree.delete(`${opts.projectRoot}/bun.lockb`)
+  const bunLockPath = `${opts.projectRoot}/bun.lockb`;
+  if (tree.exists(bunLockPath)) {
+    tree.delete(bunLockPath)
+  }
   tree.delete(`${opts.projectRoot}/.gitignore`)
+
+  // we hack the changes into the change logs of the tree
+  for (const filePath of walkSync(opts.projectRoot)) {
+    const content = readFileIfExisting(filePath);
+
+    ((tree as any).recordedChanges as Record<string, { content: Buffer | string, isDeleted: boolean, options: any }>)[(tree as any).rp(filePath)] = {
+      content: Buffer.from(content),
+      isDeleted: false,
+      options,
+    };
+  }
   updateJson(tree, `${opts.projectRoot}/tsconfig.json`, (file) => {
     file.extends = join(offsetFromRoot(opts.projectRoot), 'tsconfig.base.json')
     return file
@@ -56,7 +72,7 @@ export async function createGenerator(
     pkg.devDependencies = mergeDependencies(pkg.devDependencies, devDependencies)
     return pkg
   });
-  const scriptToRun = scripts.start ? scripts.start :  scripts.dev ? scripts.dev : null;
+  const scriptToRun = scripts.start ? scripts.start : scripts.dev ? scripts.dev : null;
   if (scriptToRun) {
     const baseFileToRun = findFileToRun(tree, scriptToRun, opts.projectRoot);
     if (baseFileToRun) {
@@ -64,7 +80,23 @@ export async function createGenerator(
     }
   }
 
+  if (process.env.NX_DRY_RUN) {
+    rmSync(opts.projectRoot, { force: true, recursive: true })
+  }
+
   await formatFiles(tree);
+}
+
+
+function* walkSync(dir) {
+  const files = readdirSync(dir, { withFileTypes: true });
+  for (const file of files) {
+    if (file.isDirectory()) {
+      yield* walkSync(join(dir, file.name));
+    } else {
+      yield join(dir, file.name);
+    }
+  }
 }
 
 function createArgs(
@@ -74,6 +106,7 @@ function createArgs(
   args.push(options.template);
   args.push(options.projectRoot)
   args.push('--no-git')
+  args.push('--no-install')
   return args;
 }
 
@@ -86,7 +119,7 @@ function normalizedSchema(tree: Tree, options: CreateGeneratorSchema): Normalize
   const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
   const layout = getWorkspaceLayout(tree);
   const projectRoot = joinPathFragments(
-    options.type === 'library' ?  (layout.libsDir === '.' ? '' : layout.libsDir) : (layout.appsDir === '.' ? '' : layout.appsDir),
+    options.type === 'library' ? (layout.libsDir === '.' ? '' : layout.libsDir) : (layout.appsDir === '.' ? '' : layout.appsDir),
     projectDirectory
   );
   return {
@@ -100,8 +133,8 @@ function normalizedSchema(tree: Tree, options: CreateGeneratorSchema): Normalize
 }
 
 
-function findFileToRun(host:Tree, script: string, projectRoot: string) {
-  const afterRun =  script.split('run')[1].split(' ').filter(s => s.length);
+function findFileToRun(host: Tree, script: string, projectRoot: string) {
+  const afterRun = script.split('run')[1].split(' ').filter(s => s.length);
   return afterRun.find(path => host.exists(join(projectRoot, path)));
 }
 
