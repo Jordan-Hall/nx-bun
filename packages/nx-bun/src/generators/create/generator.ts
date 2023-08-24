@@ -82,10 +82,11 @@ function normalizedSchema(tree: Tree, options: CreateGeneratorSchema): Normalize
   const projectDirectory = options.directory
     ? `${names(options.directory).fileName}/${name}`
     : name;
+
   const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
   const layout = getWorkspaceLayout(tree);
   const projectRoot = joinPathFragments(
-    layout.libsDir === '.' ? '' : layout.libsDir,
+    options.type === 'library' ?  (layout.libsDir === '.' ? '' : layout.libsDir) : (layout.appsDir === '.' ? '' : layout.appsDir),
     projectDirectory
   );
   return {
