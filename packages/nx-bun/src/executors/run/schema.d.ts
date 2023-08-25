@@ -1,5 +1,5 @@
-export interface RunExecutorSchema {
+import type { BaseBun } from '../../utils/common-options'
+export interface RunExecutorSchema extends BaseBun {
   main: string,
   watch: boolean,
-  smol: boolean
 } // eslint-disable-line

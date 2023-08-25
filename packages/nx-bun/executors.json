@@ -5,10 +5,15 @@
       "schema": "./src/executors/run/schema.json",
       "description": "Run a JavaScript or TypeScript program in Bun"
     },
-    "bundle": {
-      "implementation": "./src/executors/bundle/executor",
-      "schema": "./src/executors/bundle/schema.json",
+    "build": {
+      "implementation": "./src/executors/build/executor",
+      "schema": "./src/executors/build/schema.json",
       "description": "Bundle your program using bun.bundle"
+    },
+    "test": {
+      "implementation": "./src/executors/test/executor",
+      "schema": "./src/executors/test/schema.json",
+      "description": "Bun ships with a fast built-in test runner. Tests are executed with the Bun runtime"
     }
   }
 }

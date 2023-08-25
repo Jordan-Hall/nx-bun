@@ -2,15 +2,17 @@ import {
   addProjectConfiguration,
   joinPathFragments,
   ProjectConfiguration,
+  TargetConfiguration,
   Tree,
 } from '@nx/devkit';
 import { NormalizedSchema } from './NormalizedSchema';
+import { BundleExecutorSchema } from '../../executors/build/schema';
 
 export function addProjectFromScript(host: Tree, opts: NormalizedSchema, file: string, type: 'serve' | 'test' | 'e2e') {
   const targets: ProjectConfiguration['targets'] = {};
 
   if (type === 'serve') {
-    targets.build = {
+    (targets.build as TargetConfiguration<BundleExecutorSchema> ) = {
       executor: '@nx-bun/nx:build',
         outputs: [
           joinPathFragments(
@@ -19,12 +21,14 @@ export function addProjectFromScript(host: Tree, opts: NormalizedSchema, file: s
           ),
         ],
         options: {
-        main: joinPathFragments(opts.projectRoot, file),
-          outputFile: joinPathFragments(
+          entrypoints: [joinPathFragments(opts.projectRoot, file)],
+          outputPath: joinPathFragments(
             'dist',
             opts.projectRoot ? opts.name : opts.projectRoot,
             file
           ),
+          bun: false,
+          smol: false,
         },
     };
     if (opts.type === 'application') {

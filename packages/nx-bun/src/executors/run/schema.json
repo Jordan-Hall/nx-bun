@@ -19,6 +19,15 @@
       "type": "boolean",
       "description": "In memory-constrained environments, use the smol flag to reduce memory usage at a cost to performance.",
       "default": false
+    },
+    "bun": {
+      "type": "boolean",
+      "description": "Force a script or package to use Bun.js instead of Node.js (via symlinking node)",
+      "default": false
+    },
+    "config": {
+      "type": "string",
+      "description": "Config file to load bun from (e.g. -c bunfig.toml",
     }
   },
   "required": []

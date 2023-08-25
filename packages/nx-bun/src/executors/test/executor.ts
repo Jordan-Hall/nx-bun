@@ -1,14 +1,19 @@
+import { TestExecutorSchema } from './schema';
 import { createAsyncIterable } from '@nx/devkit/src/utils/async-iterable';
-import { RunExecutorSchema } from './schema';
 import { assertBunAvailable, executeCliAsync, isBunSubprocess } from '../../utils/bun-cli';
 import { parentPort, } from 'worker_threads';
 import { Readable } from 'node:stream';
 import { killCurrentProcess } from '../../utils/kill';
+import { ExecutorContext } from '@nx/devkit';
 
+interface TestExecutorNormalizedSchema extends TestExecutorSchema {
+  testDir: string
+}
 
-export default async function* runExecutor(options: RunExecutorSchema) {
+export default async function* runExecutor(options: TestExecutorSchema, context: ExecutorContext) {
   assertBunAvailable();
-  const args = createArgs(options);
+  const opts = normalizeOptions(options, context);
+  const args = createArgs(opts);
   yield* createAsyncIterable(async ({ next, done }) => {
     const runningBun = await executeCliAsync(args, { stdio: 'pipe', stderr: 'pipe', stdin: 'pipe', stdout: 'pipe' });
 
@@ -85,24 +90,52 @@ export default async function* runExecutor(options: RunExecutorSchema) {
   });
 }
 
-function createArgs(options: RunExecutorSchema) {
-  const args: string[] = [];
-  if (options.bun) {
-    args.push('--bun')
-  }
+function createArgs(options: TestExecutorNormalizedSchema) {
+  const args: string[] = [`--cwd ${options.testDir}`];
+
   if (options.smol) {
     args.push('--smol');
-  }
-  if (options.watch) {
-    args.push('--watch');
   }
 
   if (options.config) {
     args.push(`-c ${options.config}`)
   }
 
-  args.push('run')
-  // make sure file is always last option
-  args.push(options.main);
+  args.push('test')
+
+  if (typeof options.bail === 'boolean') {
+    args.push('--bail')
+  } else if (typeof options.bail === 'number') {
+    args.push(`--bail ${options.bail}`)
+  }
+  if (options.preload) {
+    args.push(`--preload ${options.preload}`)
+  }
+  if (options.timeout) {
+    args.push(`--timeout ${options.timeout}`)
+  }
+
+  if (options.rerunEach) {
+    args.push(`--rerun-each ${options.rerunEach}`)
+  }
+  if (options.watch) {
+    args.push('--watch');
+  }
   return args;
 }
+
+function normalizeOptions(options: TestExecutorSchema, context: ExecutorContext): TestExecutorNormalizedSchema {
+  const projectConfig =
+    context.projectGraph?.nodes?.[context.projectName]?.data;
+
+  if (!projectConfig) {
+    throw new Error(
+      `Could not find project configuration for ${context.projectName} in executor context.`
+    );
+  }
+  return {
+    ...options,
+    testDir: projectConfig.sourceRoot || projectConfig.root
+  };
+}
+
