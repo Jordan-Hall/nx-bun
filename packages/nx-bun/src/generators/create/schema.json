@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/schema",
+  "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "Create",
   "title": "This uses Bun template under the hood while then configured to work with NX",
   "type": "object",
@@ -34,7 +34,46 @@
       "description": "A directory where the project is placed",
       "alias": "d",
       "x-priority": "important"
+    },
+    "publishable": {
+      "type": "boolean",
+      "default": false,
+      "description": "Generate a publishable library.",
+      "x-priority": "important"
+    },
+    "importPath": {
+      "type": "string",
+      "description": "The library name used to import it, like @myorg/my-awesome-lib. Required for publishable library.",
+      "x-priority": "important"
     }
   },
-  "required": ["name", "template", "type"]
+  "required": ["name", "template", "type"],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "library" },
+          "publishable": { "const": true }
+        },
+        "required": ["type", "publishable"]
+      },
+      "then": {
+        "required": ["importPath"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "application" }
+        },
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "publishable": { "const": false },
+          "importPath": { "const": "" }
+        }
+      }
+    }
+  ]
 }

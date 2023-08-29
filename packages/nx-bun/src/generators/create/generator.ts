@@ -17,6 +17,7 @@ import * as semver from 'semver'
 import initGenerator from '../init/generator';
 import { readdirSync, rmSync } from 'fs';
 import { readFileIfExisting } from 'nx/src/utils/fileutils';
+import { updateTsConfig } from '../../utils/ts-config';
 
 export async function createGenerator(
   tree: FsTree,
@@ -33,13 +34,13 @@ export async function createGenerator(
     stdio: 'inherit',
     stdout: 'inherit'
   })
+  rmSync(`${opts.projectRoot}/node_modules`, { force: true, recursive: true })
 
   const bunLockPath = `${opts.projectRoot}/bun.lockb`;
   if (tree.exists(bunLockPath)) {
     tree.delete(bunLockPath)
   }
   tree.delete(`${opts.projectRoot}/.gitignore`)
-
   // we hack the changes into the change logs of the tree
   for (const filePath of walkSync(opts.projectRoot)) {
     const content = readFileIfExisting(filePath);
@@ -77,6 +78,11 @@ export async function createGenerator(
     const baseFileToRun = findFileToRun(tree, scriptToRun, opts.projectRoot);
     if (baseFileToRun) {
       addProjectFromScript(tree, opts, baseFileToRun, 'serve')
+
+      if (opts.publishable) {
+        updateTsConfig(tree, { entryPoints: [joinPathFragments(opts.projectRoot, baseFileToRun)], importPath: opts.importPath })
+      }
+    
     }
   }
 

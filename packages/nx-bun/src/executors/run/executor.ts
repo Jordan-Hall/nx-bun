@@ -14,12 +14,27 @@ export default async function* runExecutor(options: RunExecutorSchema) {
 
     if (runningBun.stdout) {
       if (parentPort) {
-        const text = await new Response(runningBun.stdout as  ReadableStream).text();
-        parentPort.postMessage({type: 'stdout', message: text})
+        const writableStream = new WritableStream({
+          write(chunk) {
+            const text = new TextDecoder().decode(chunk);
+            if (parentPort) {
+              parentPort.postMessage({ type: 'stdout', message: text });
+            } else {
+              console.log(text);
+            }
+          },
+          close() {
+            console.log('Stream closed');
+          },
+          abort(err) {
+            console.error('Stream aborted', err);
+          }
+        });
+        (runningBun.stdout as ReadableStream<Buffer>).pipeTo(writableStream);
       } else {
         (runningBun.stdout as Readable).on('data', (data) => {
           if (parentPort) {
-            parentPort.postMessage({type: 'stdout', message: data})
+            parentPort.postMessage({ type: 'stdout', message: data })
           } else {
             console.log(`stdout: ${data}`);
           }
@@ -29,12 +44,12 @@ export default async function* runExecutor(options: RunExecutorSchema) {
 
     if (runningBun.stderr) {
       if (parentPort) {
-        const text = await new Response(runningBun.stderr as  ReadableStream).text();
-        parentPort.postMessage({type: 'stderr', message: text})
+        const text = await new Response(runningBun.stderr as ReadableStream).text();
+        parentPort.postMessage({ type: 'stderr', message: text })
       } else {
         (runningBun.stderr as Readable).on('data', (data) => {
           if (parentPort) {
-            parentPort.postMessage({type: 'stderr', message: data})
+            parentPort.postMessage({ type: 'stderr', message: data })
           } else {
             console.log(`stderr: ${data}`);
           }

@@ -5,4 +5,6 @@ export interface CreateGeneratorSchema {
   template: string;
   type: ProjectType,
   directory?: string;
+  publishable?: boolean;
+  importPath?: string;
 }

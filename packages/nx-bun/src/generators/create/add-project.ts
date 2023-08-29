@@ -12,24 +12,19 @@ export function addProjectFromScript(host: Tree, opts: NormalizedSchema, file: s
   const targets: ProjectConfiguration['targets'] = {};
 
   if (type === 'serve') {
-    (targets.build as TargetConfiguration<BundleExecutorSchema> ) = {
+    (targets.build as TargetConfiguration<BundleExecutorSchema>) = {
       executor: '@nx-bun/nx:build',
-        outputs: [
-          joinPathFragments(
-            'dist',
-            opts.projectRoot ? opts.name : opts.projectRoot
-          ),
-        ],
-        options: {
-          entrypoints: [joinPathFragments(opts.projectRoot, file)],
-          outputPath: joinPathFragments(
-            'dist',
-            opts.projectRoot ? opts.name : opts.projectRoot,
-            file
-          ),
-          bun: false,
-          smol: false,
-        },
+      outputs: ["{options.outputPath}"],
+      options: {
+        entrypoints: [joinPathFragments(opts.projectRoot, file)],
+        outputPath: joinPathFragments(
+          'dist',
+          opts.projectRoot ? opts.name : opts.projectRoot,
+          file
+        ),
+        bun: false,
+        smol: false,
+      },
     };
     if (opts.type === 'application') {
       targets.serve = {
@@ -49,7 +44,7 @@ export function addProjectFromScript(host: Tree, opts: NormalizedSchema, file: s
   const filePaths = file.split('/');
   const project: ProjectConfiguration = {
     root: opts.projectRoot,
-    sourceRoot: joinPathFragments(opts.projectRoot,  filePaths.length > 1 ? filePaths[0] : ''),
+    sourceRoot: joinPathFragments(opts.projectRoot, filePaths.length > 1 ? filePaths[0] : ''),
     projectType: opts.type,
     targets,
     tags: [],
