@@ -2,13 +2,13 @@ import { createAsyncIterable } from '@nx/devkit/src/utils/async-iterable';
 import { RunExecutorSchema } from './schema';
 import { assertBunAvailable, executeCliAsync, isBunSubprocess } from '../../utils/bun-cli';
 import { parentPort, } from 'worker_threads';
-import { Readable } from 'node:stream';
 import { killCurrentProcess } from '../../utils/kill';
+import { ExecutorContext } from '@nx/devkit';
 
 
-export default async function* runExecutor(options: RunExecutorSchema) {
+export default async function* runExecutor(options: RunExecutorSchema, context: ExecutorContext) {
   assertBunAvailable();
-  const args = createArgs(options);
+  const args = createArgs(options, context);
   yield* createAsyncIterable(async ({ next, done }) => {
     const runningBun = await executeCliAsync(args, { stdio: 'pipe', stderr: 'inherit', stdin: 'pipe', stdout: 'inherit' });
 
@@ -98,7 +98,8 @@ export default async function* runExecutor(options: RunExecutorSchema) {
   });
 }
 
-function createArgs(options: RunExecutorSchema) {
+function createArgs(options: RunExecutorSchema, context: ExecutorContext) {
+
   const args: string[] = [];
   if (options.bun) {
     args.push('--bun')
@@ -109,6 +110,10 @@ function createArgs(options: RunExecutorSchema) {
   if (options.watch) {
     args.push('--watch');
   }
+  if (options.hot) {
+    args.push('--hot');
+  }
+
 
   if (options.config) {
     args.push(`-c ${options.config}`)

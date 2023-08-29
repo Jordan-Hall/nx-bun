@@ -1,8 +1,9 @@
+import { ExecutorContext } from '@nx/devkit';
 import { assertBunAvailable } from '../../utils/bun-cli';
 import { BundleExecutorSchema } from './schema';
 import 'bun-types'
 
-export default async function bundleExecutor(options: BundleExecutorSchema) {
+export default async function bundleExecutor(options: BundleExecutorSchema, context: ExecutorContext) {
   assertBunAvailable();
   const result =  await Bun.build({
     entrypoints: options.entrypoints,

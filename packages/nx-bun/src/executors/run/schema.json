@@ -25,6 +25,11 @@
       "description": "Force a script or package to use Bun.js instead of Node.js (via symlinking node)",
       "default": false
     },
+    "hot": {
+      "type": "boolean",
+      "description": "Enable auto reload in bun's JavaScript runtime",
+      "default": true
+    },
     "config": {
       "type": "string",
       "description": "Config file to load bun from (e.g. -c bunfig.toml",

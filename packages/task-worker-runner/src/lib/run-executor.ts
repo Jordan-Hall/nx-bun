@@ -44,7 +44,9 @@ function setUpOutputWatching(captureStderr: boolean, streamOutput: boolean) {
     onlyStdout.push(chunk);
     appendFileSync(stdoutAndStderrLogFileHandle, chunk);
     if (streamOutput) {
-      stdoutWrite.apply(process.stdout, [chunk, encoding, callback]);
+      if (stdoutWrite) {
+        stdoutWrite.apply(process.stdout, [chunk, encoding, callback]);
+      }
       if (parentPort) {
         parentPort.postMessage({
           type: 'stdout',
@@ -63,7 +65,9 @@ function setUpOutputWatching(captureStderr: boolean, streamOutput: boolean) {
   ) => {
     appendFileSync(stdoutAndStderrLogFileHandle, chunk);
     if (streamOutput) {
-      stderrWrite.apply(process.stderr, [chunk, encoding, callback]);
+      if (stderrWrite) {
+        stderrWrite.apply(process.stderr, [chunk, encoding, callback]);
+      }
       if (parentPort) {
         parentPort.postMessage({
           type: 'stderr',
