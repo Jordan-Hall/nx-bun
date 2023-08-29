@@ -73,31 +73,30 @@ export async function getBunVersion(): Promise<string | null> {
 
 export async function executeCliAsync(args: string[], options: ExecOptions = {}): Promise<UnifiedChildProcess> {
   // TODO: Get bun spawn working. Cant get anything out of it
-  // if (isBun) {
-  //   if (isBunExecOptions(options)) {
-  //     const childProcess = Bun.spawn(['bun', ...args], {
-  //       cwd: options.cwd || workspaceRoot,
-  //       env: {...process.env, ...(workerData || {})},
-  //       stdin: options.stdin || 'ignore',
-  //       stdout: options.stdout || isBun ? 'pipe' : 'pipe',
-  //       stderr: options.stderr || isBun ? 'pipe' : 'pipe',
-  //     });
+  if (isBun) {
+    if (isBunExecOptions(options)) {
+      const childProcess = Bun.spawn(['bun', ...args], {
+        cwd: options.cwd || workspaceRoot,
+        env: {...process.env, ...(workerData || {})},
+        stdin: options.stdin || 'ignore',
+        stdout: options.stdout || isBun ? 'pipe' : 'pipe',
+        stderr: options.stderr || isBun ? 'pipe' : 'pipe',
+      });
 
-  //     if (isBunSubprocess(childProcess)) {
-  //       return Promise.resolve(childProcess);
-  //     }
-  //   }
-  // } else {
-    // if (isNodeExecOptions(options)) {
+      if (isBunSubprocess(childProcess)) {
+        return Promise.resolve(childProcess);
+      }
+    }
+  } else {
+    if (isNodeExecOptions(options)) {
       return spawn('bun', args, {
         cwd: options.cwd || workspaceRoot,
         env: {...process.env, ...(workerData || {})},
         windowsHide: true,
         stdio: (options as NodeExecOptions).stdio || 'pipe',
       })
-    // }
-  // }
-  // throw new Error("Unable to create child process.");
+    }
+  }
 }
 
 export async function executeCliWithLogging(args: string[], options: ExecOptions = {}): Promise<boolean> {

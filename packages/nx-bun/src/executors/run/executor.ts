@@ -10,15 +10,16 @@ export default async function* runExecutor(options: RunExecutorSchema) {
   assertBunAvailable();
   const args = createArgs(options);
   yield* createAsyncIterable(async ({ next, done }) => {
-    const runningBun = await executeCliAsync(args, { stdio: 'pipe', stderr: 'pipe', stdin: 'pipe', stdout: 'pipe' });
+    const runningBun = await executeCliAsync(args, { stdio: 'pipe', stderr: 'inherit', stdin: 'pipe', stdout: 'inherit' });
 
-    if (runningBun.stdout) {
-      if (parentPort) {
-        const writableStream = new WritableStream({
+    if (isBunSubprocess(runningBun)) {
+      const writableStream = (type: 'stdout' | 'stderr') => {
+        const textDecoder = new TextDecoder();
+        return new WritableStream({
           write(chunk) {
-            const text = new TextDecoder().decode(chunk);
+            const text = textDecoder.decode(chunk);
             if (parentPort) {
-              parentPort.postMessage({ type: 'stdout', message: text });
+              parentPort.postMessage({ type, message: text });
             } else {
               console.log(text);
             }
@@ -30,31 +31,28 @@ export default async function* runExecutor(options: RunExecutorSchema) {
             console.error('Stream aborted', err);
           }
         });
-        (runningBun.stdout as ReadableStream<Buffer>).pipeTo(writableStream);
-      } else {
-        (runningBun.stdout as Readable).on('data', (data) => {
-          if (parentPort) {
-            parentPort.postMessage({ type: 'stdout', message: data })
-          } else {
-            console.log(`stdout: ${data}`);
-          }
-        });
       }
-    }
+      (runningBun.stdout as ReadableStream<Buffer>).pipeTo(writableStream('stdout'));
+      (runningBun.stderr as ReadableStream<Buffer>).pipeTo(writableStream('stderr'));
+    } else {
+      const textDecoder = new TextDecoder();
+      runningBun.stdout.on('data', (data) => {
+        const textData = textDecoder.decode(data);
+        if (parentPort) {
+          parentPort.postMessage({ type: 'stdout', message: textData })
+        } else {
+          console.log(textData);
+        }
+      });
+      runningBun.stderr.on('data', (data) => {
+        const textData = textDecoder.decode(data);
+        if (parentPort) {
+          parentPort.postMessage({ type: 'stderr', message: textData })
+        } else {
+          console.log(textData);
+        }
+      });
 
-    if (runningBun.stderr) {
-      if (parentPort) {
-        const text = await new Response(runningBun.stderr as ReadableStream).text();
-        parentPort.postMessage({ type: 'stderr', message: text })
-      } else {
-        (runningBun.stderr as Readable).on('data', (data) => {
-          if (parentPort) {
-            parentPort.postMessage({ type: 'stderr', message: data })
-          } else {
-            console.log(`stderr: ${data}`);
-          }
-        });
-      }
     }
 
     process.on('SIGTERM', async () => {
