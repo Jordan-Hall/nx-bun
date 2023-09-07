@@ -1,0 +1,5 @@
+function <%= propertyName %>(): string {
+    return '<%= name %>';
+}
+
+console.log(<%= propertyName %>())

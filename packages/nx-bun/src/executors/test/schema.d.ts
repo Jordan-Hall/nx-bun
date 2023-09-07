@@ -6,5 +6,6 @@ export interface TestExecutorSchema {
   rerunEach?: number;
   smol: boolean,
   config?: string,
+  bun: boolean
 
 } // eslint-disable-line

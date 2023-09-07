@@ -12,6 +12,15 @@
         "index": 0
       },
       "x-prompt": "What name would you like to use?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "A directory where the lib is placed.",
+      "x-priority": "important"
+    },
+    "tags": {
+      "type": "string",
+      "description": "Add tags to the library (used for linting)."
     }
   },
   "required": ["name"]

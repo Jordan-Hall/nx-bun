@@ -15,7 +15,7 @@ import {
   determineProjectNameAndRootOptions,
   type ProjectNameAndRootOptions,
 } from '@nx/devkit/src/generators/project-name-and-root-utils';
-import { LibGeneratorSchema, PublishableLib, RegularLib, LibUnderhood } from './schema';
+import { LibGeneratorSchema,LibUnderhood } from './schema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
 import { updateTsConfig } from '../../utils/ts-config';
@@ -62,6 +62,7 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
     options: {
       smol: false,
       bail: true,
+      bun: false
     }
   }
 
@@ -75,8 +76,6 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
       test
     },
   });
-
-
 
   generateFiles(tree, path.join(__dirname, 'files'), `${opts.projectRoot}`, templateOptions);
 
@@ -145,18 +144,6 @@ function getCaseAwareFileName(options: {
   return options.pascalCaseFiles ? normalized.className : normalized.fileName;
 }
 
-function isPublishableLib(lib: LibGeneratorSchema): lib is PublishableLib {
-  return lib.publishable === true && typeof lib.importPath === 'string';
-}
-
-
-function determineLibType(lib: LibGeneratorSchema) {
-  if (isPublishableLib(lib)) {
-    return lib;
-  } else {
-    return lib as RegularLib;
-  }
-}
 
 
 export default libGenerator;

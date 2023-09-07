@@ -4,6 +4,7 @@ import { BundleExecutorSchema } from './schema';
 import 'bun-types'
 
 export default async function bundleExecutor(options: BundleExecutorSchema, context: ExecutorContext) {
+  
   assertBunAvailable();
   const result =  await Bun.build({
     entrypoints: options.entrypoints,

@@ -99,8 +99,8 @@
     },
     "config": {
       "type": "string",
-      "description": "Config file to load bun from (e.g. -c bunfig.toml",
+      "description": "Config file to load bun from (e.g. -c bunfig.toml"
     }
   },
-  "required": ["entrypoints", "outdir"]
+  "required": ["entrypoints", "outputPath"]
 }
