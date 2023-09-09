@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 
-import { <%= propertyName %> } from './<%= fileName %>';
+import { <%= propertyName %> } from './index';
 
 test('<%= propertyName %> should work', () => {
     expect(<%= propertyName %>()).toBe('<%= name %>');
