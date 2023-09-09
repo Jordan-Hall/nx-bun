@@ -1,8 +1,9 @@
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { Tree, readProjectConfiguration } from '@nx/devkit';
+import { Tree, readJson, readProjectConfiguration } from '@nx/devkit';
 
 import { libGenerator } from './generator';
 import { LibGeneratorSchema } from './schema';
+import { getRootTsConfigPathInTree } from '../../utils/ts-config';
 
 describe('lib generator', () => {
   let tree: Tree;
@@ -16,5 +17,8 @@ describe('lib generator', () => {
     await libGenerator(tree, options);
     const config = readProjectConfiguration(tree, 'test');
     expect(config).toBeDefined();
+    expect(readJson(tree, getRootTsConfigPathInTree(tree))?.compilerOptions?.types).toContain('bun-types')
+
   });
+  
 });

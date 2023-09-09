@@ -1,10 +1,8 @@
 import { execSync } from 'child_process';
 import { join, dirname } from 'path';
 import { mkdirSync, rmSync } from 'fs';
-import { checkFilesExist, runNxCommandAsync, uniq } from '@nx/plugin/testing';
 
-
-describe('nx-bun', () => {
+describe('task-worker-runner', () => {
   let projectDirectory: string;
 
   beforeAll(() => {
@@ -12,7 +10,7 @@ describe('nx-bun', () => {
 
     // The plugin has been built and published to a local registry in the jest globalSetup
     // Install the plugin built with the latest source code into the test repo
-    execSync(`npm install @nx-bun/nx@e2e`, {
+    execSync(`npm install @nx-bun/task-worker-runner@e2e`, {
       cwd: projectDirectory,
       stdio: 'inherit',
       env: process.env,
@@ -29,43 +27,12 @@ describe('nx-bun', () => {
 
   it('should be installed', () => {
     // npm ls will fail if the package is not installed properly
-    execSync('npm ls @nx-bun/nx', {
+    execSync('npm ls @nx-bun/task-worker-runner', {
       cwd: projectDirectory,
       stdio: 'inherit',
     });
   });
-
-
-  describe('Bun app', () => {
-    it('should build application', async () => {
-      const plugin = uniq('bun');
-      await runNxCommandAsync(
-        `generate @nx-bun/app:app ${plugin} --e2eTestRunner='none' --junitTestRunner='none'`
-      );
-
-      const result = await runNxCommandAsync(`serve ${plugin}`);
-      expect(result.stdout).toContain(
-        plugin
-      );
-    });
-
-
-    it('should build application', async () => {
-      const plugin = uniq('bun');
-      await runNxCommandAsync(
-        `generate @nx-bun/app:app ${plugin} --e2eTestRunner='none' --junitTestRunner='none'`
-      );
-
-      const result = await runNxCommandAsync(`build ${plugin}`);
-      expect(result.stdout).toContain(
-        plugin
-      );
-      expect(result.stdout).not.toContain(
-        'error'
-      );
-    });
 });
-
 
 /**
  * Creates a test project with create-nx-workspace and installs the plugin

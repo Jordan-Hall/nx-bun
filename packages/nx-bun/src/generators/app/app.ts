@@ -18,7 +18,6 @@ import {
 import { AppGeneratorSchema } from './schema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
-import { updateTsConfig } from '../../utils/ts-config';
 import { RunExecutorSchema } from '../../executors/run/schema';
 
 export interface NormalizedSchema extends AppGeneratorSchema {

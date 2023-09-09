@@ -17,7 +17,7 @@
       "description": "lib generator"
     },
     "application": {
-      "factory": "./src/generators/app/generator",
+      "factory": "./src/generators/app/app",
       "schema": "./src/generators/app/schema.json",
       "description": "Application generator"
     }

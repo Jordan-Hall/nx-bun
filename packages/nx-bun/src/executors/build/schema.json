@@ -1,106 +1,100 @@
 {
-  "$schema": "http://json-schema.org/schema",
-  "version": 2,
-  "title": "Bun.sh Bundler/Build Executor",
-  "description": "",
-  "type": "object",
-  "properties": {
-    "entrypoints": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "The entry points for the bundler."
-    },
-    "outputPath": {
-      "type": "string",
-      "description": "The output directory for the bundled files."
-    },
-    "target": {
-      "type": "string",
-      "description": "The target environment for the bundler.",
-      "enum": ["bun", "node", "browser"]
-    },
-    "format": {
-      "type": "string",
-      "description": "The format of the bundled files.",
-      "default": "esm"
-    },
-    "splitting": {
-      "type": "boolean",
-      "description": "Whether to enable code splitting or not.",
-      "default": false
-    },
-    "sourcemap": {
-      "type": "string",
-      "description": "Whether to generate sourcemaps for the bundled files or not.",
-      "enum": ["none", "inline", "external"],
-      "default": "none"
-    },
-    "minify": {
-      "type": "boolean",
-      "description": "Whether to minify the bundled files or not.",
-      "default": false
-    },
-    "external": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "List of external dependencies that should not be bundled.",
-    },
-    "naming": {
-      "oneOf": [
-        {
-          "type": "string",
-          "description": "Naming convention for the bundled files."
-        },
-        {
-          "type": "object",
-          "properties": {
-            "chunk": {
-              "type": "string",
-              "description": "Naming convention for chunks."
-            },
-            "entry": {
-              "type": "string",
-              "description": "Naming convention for entry files."
-            },
-            "asset": {
-              "type": "string",
-              "description": "Naming convention for assets."
-            }
-          },
-          "additionalProperties": false,
-          "description": "Detailed naming conventions for different types of bundled files."
-        }
-      ]
-    },
-    "publicPath": {
-      "type": "string",
-      "description": "Public path for the bundled assets."
-    },
-    "define": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      },
-      "description": "Define global constants for the bundler."
-    },
-    "smol": {
-      "type": "boolean",
-      "description": "In memory-constrained environments, use the smol flag to reduce memory usage at a cost to performance.",
-      "default": false
-    },
-    "bun": {
-      "type": "boolean",
-      "description": "Force a script or package to use Bun.js instead of Node.js (via symlinking node)",
-      "default": false
-    },
-    "config": {
-      "type": "string",
-      "description": "Config file to load bun from (e.g. -c bunfig.toml"
-    }
-  },
-  "required": ["entrypoints", "outputPath"]
+	"$schema": "http://json-schema.org/schema",
+	"version": 2,
+	"title": "Bun.sh Bundler/Build Executor",
+	"description": "",
+	"type": "object",
+	"properties": {
+		"entrypoints": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"description": "The entry points for the bundler."
+		},
+		"outputPath": {
+			"type": "string",
+			"description": "The output directory for the bundled files."
+		},
+		"target": {
+			"type": "string",
+			"description": "The target environment for the bundler.",
+			"enum": ["bun", "node", "browser"]
+		},
+		"format": {
+			"type": "string",
+			"description": "The format of the bundled files.",
+			"default": "esm"
+		},
+		"splitting": {
+			"type": "boolean",
+			"description": "Whether to enable code splitting or not.",
+			"default": false
+		},
+		"sourcemap": {
+			"type": "string",
+			"description": "Whether to generate sourcemaps for the bundled files or not.",
+			"enum": ["none", "inline", "external"],
+			"default": "none"
+		},
+		"minify": {
+			"type": "boolean",
+			"description": "Whether to minify the bundled files or not.",
+			"default": false
+		},
+		"external": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"description": "List of external dependencies that should not be bundled."
+		},
+		"naming": {
+			"oneOf": [{
+					"type": "string",
+					"description": "Naming convention for the bundled files."
+				},
+				{
+					"type": "object",
+					"properties": {
+						"chunk": {
+							"type": "string",
+							"description": "Naming convention for chunks."
+						},
+						"entry": {
+							"type": "string",
+							"description": "Naming convention for entry files."
+						},
+						"asset": {
+							"type": "string",
+							"description": "Naming convention for assets."
+						}
+					},
+					"additionalProperties": false,
+					"description": "Detailed naming conventions for different types of bundled files."
+				}
+			]
+		},
+		"publicPath": {
+			"type": "string",
+			"description": "Public path for the bundled assets."
+		},
+		"define": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "string"
+			},
+			"description": "Define global constants for the bundler."
+		},
+		"smol": {
+			"type": "boolean",
+			"description": "In memory-constrained environments, use the smol flag to reduce memory usage at a cost to performance.",
+			"default": false
+		},
+		"config": {
+			"type": "string",
+			"description": "Config file to load bun from (e.g. -c bunfig.toml"
+		}
+	},
+	"required": ["entrypoints", "outputPath"]
 }

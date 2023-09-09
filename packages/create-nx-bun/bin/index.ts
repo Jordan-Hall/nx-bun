@@ -19,6 +19,7 @@ async function main() {
     name,
     nxCloud: false,
     packageManager: 'npm',
+    
   });
 
   console.log(`Successfully created the workspace: ${directory}.`);
