@@ -11,7 +11,7 @@ import { assertBunAvailable } from '../../utils/bun-cli';
 
 export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
   await assertBunAvailable(options.forceBunInstall);
-  if (options.bunNXRuntime) {
+  if (options.bunNXRuntime && !process.env.NX_DRY_RUN) {
     //TODO: add patch support for nx for better integration in some cases
     updateJson(tree, 'package.json', pkg => {
       pkg.devDependencies = {...pkg.devDependencies, '@nx-bun/task-worker-runner': 'latest'}

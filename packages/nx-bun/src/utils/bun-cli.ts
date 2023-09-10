@@ -48,10 +48,12 @@ export async function assertBunAvailable(forceInstall = false) {
       return Promise.resolve(true);
     }
   } catch (e) {
-    if (!forceInstall) {
+    if (forceInstall && !process.env.NX_DRY_RUN) {
       const { execSync } = await import('child_process');
       execSync(`curl -fsSL https://bun.sh/install | bash`)
       return Promise.resolve(true);
+    } else if (forceInstall) {
+      throw new Error(stripIndents`force install of bun is not supported in dry-run`)
     }
     throw new Error(stripIndents`Unable to find Bun on your system.
         Bun will need to be installed in order to run targets from nx-bun in this workspace.
