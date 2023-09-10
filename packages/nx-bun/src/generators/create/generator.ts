@@ -14,7 +14,7 @@ import { join } from 'path';
 import { NormalizedSchema } from './NormalizedSchema';
 import { addProjectFromScript } from './add-project';
 import * as semver from 'semver'
-import initGenerator from '../init/generator';
+import initGenerator from '../init/init';
 import { readdirSync, rmSync } from 'fs';
 import { readFileIfExisting } from 'nx/src/utils/fileutils';
 import { updateTsConfig } from '../../utils/ts-config';
@@ -51,10 +51,12 @@ export async function createGenerator(
       options,
     };
   }
-  updateJson(tree, `${opts.projectRoot}/tsconfig.json`, (file) => {
-    file.extends = join(offsetFromRoot(opts.projectRoot), 'tsconfig.base.json')
-    return file
-  });
+  if (tree.exists(`${opts.projectRoot}/tsconfig.json`)) {
+    updateJson(tree, `${opts.projectRoot}/tsconfig.json`, (file) => {
+      file.extends = join(offsetFromRoot(opts.projectRoot), 'tsconfig.base.json')
+      return file
+    });
+  }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let scripts: Record<string, string> = {};
   let dependencies: Record<string, string> = {};

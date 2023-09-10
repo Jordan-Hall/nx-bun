@@ -20,6 +20,8 @@ import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
 import { getRootTsConfigPathInTree, updateTsConfig } from '../../utils/ts-config';
 import { RunExecutorSchema } from '../../executors/run/schema';
+import initGenerator from '../init/init';
+
 
 export interface NormalizedSchema extends AppGeneratorSchema {
   name: string;
@@ -34,6 +36,8 @@ export interface NormalizedSchema extends AppGeneratorSchema {
 
 export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
   const opts = await normalizeOptions(tree, options);
+
+  await initGenerator(tree, {})
 
   const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'index.ts')]
 
@@ -93,9 +97,6 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
   });
 
   generateFiles(tree, path.join(__dirname, 'files'), `${opts.projectRoot}`, templateOptions);
-
-  // ensure tscondig exists
-  updateTsConfig(tree);
 
   await formatFiles(tree);
 }

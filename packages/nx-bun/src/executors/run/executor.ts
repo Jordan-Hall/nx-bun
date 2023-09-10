@@ -7,7 +7,7 @@ import { ExecutorContext } from '@nx/devkit';
 
 
 export default async function* runExecutor(options: RunExecutorSchema, context: ExecutorContext) {
-  assertBunAvailable();
+  await assertBunAvailable();
   const args = createArgs(options, context);
   yield* createAsyncIterable(async ({ next, done }) => {
     const runningBun = await executeCliAsync(args, { stdio: 'pipe', stderr: 'inherit', stdin: 'pipe', stdout: 'inherit' });

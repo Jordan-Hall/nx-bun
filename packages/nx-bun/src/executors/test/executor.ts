@@ -11,7 +11,7 @@ interface TestExecutorNormalizedSchema extends TestExecutorSchema {
 }
 
 export default async function* runExecutor(options: TestExecutorSchema, context: ExecutorContext) {
-  assertBunAvailable();
+  await assertBunAvailable();
   const opts = normalizeOptions(options, context);
   const args = createArgs(opts);
   yield* createAsyncIterable(async ({ next, done }) => {

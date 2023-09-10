@@ -7,7 +7,7 @@ import { killCurrentProcess } from '../../utils/kill';
 
 export default async function* bundleExecutor(options: BundleExecutorSchema, context: ExecutorContext) {
 
-  assertBunAvailable();
+  await assertBunAvailable();
   if (globalThis.Bun !== undefined) {
     const result = await Bun.build({
       entrypoints: options.entrypoints,

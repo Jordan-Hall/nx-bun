@@ -19,6 +19,7 @@ import { LibGeneratorSchema,LibUnderhood } from './schema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
 import { getRootTsConfigPathInTree, updateTsConfig } from '../../utils/ts-config';
+import initGenerator from '../init/init';
 
 export interface NormalizedSchema extends LibUnderhood {
   name: string;
@@ -33,6 +34,7 @@ export interface NormalizedSchema extends LibUnderhood {
 
 export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
   const opts = await normalizeOptions(tree, options);
+  await initGenerator(tree, {})
 
   const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'index.ts')]
 
@@ -81,8 +83,6 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
 
   if (opts.publishable) {
     updateTsConfig(tree, { entryPoints: entryPoints, importPath: opts.importPath })
-  } else {
-    updateTsConfig(tree);
   }
   await formatFiles(tree);
 }

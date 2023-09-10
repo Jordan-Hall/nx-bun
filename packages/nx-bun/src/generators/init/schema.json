@@ -4,5 +4,17 @@
   "title": "Initilize @nx-bun/nx",
   "description": "Setup the workspace to build bun projects. Bun must be installed prior to use the @nx-nx/nx plugin",
   "type": "object",
-  "properties": {}
+  "properties": {
+    "unitTestRunner": {
+      "description": "Adds the specified unit test runner.",
+      "type": "string",
+      "enum": ["bun", "jest", "none"],
+      "default": "bun"
+    },
+    "bunNXRuntime": {
+      "description": "Run NX in bun enviroment (experimental - loses support for nx-cloud) ",
+      "type": "boolean",
+      "default": false
+    }
+  }
 }
