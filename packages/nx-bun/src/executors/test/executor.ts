@@ -2,7 +2,6 @@ import { TestExecutorSchema } from './schema';
 import { createAsyncIterable } from '@nx/devkit/src/utils/async-iterable';
 import { assertBunAvailable, executeCliAsync, isBunSubprocess } from '../../utils/bun-cli';
 import { parentPort, } from 'worker_threads';
-import { Readable } from 'node:stream';
 import { killCurrentProcess } from '../../utils/kill';
 import { ExecutorContext } from '@nx/devkit';
 
