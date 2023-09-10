@@ -7,6 +7,7 @@ import {
 } from '@nx/devkit';
 import { NormalizedSchema } from './NormalizedSchema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
+import { RunExecutorSchema } from '../../executors/run/schema';
 
 export function addProjectFromScript(host: Tree, opts: NormalizedSchema, file: string, type: 'serve' | 'test' | 'e2e') {
   const targets: ProjectConfiguration['targets'] = {};
@@ -27,16 +28,15 @@ export function addProjectFromScript(host: Tree, opts: NormalizedSchema, file: s
       },
     };
     if (opts.type === 'application') {
-      targets.serve = {
+      (targets.serve as TargetConfiguration<RunExecutorSchema>) = {
         executor: "@nx-bun/nx:run",
         defaultConfiguration: "development",
         options: {
-          main: joinPathFragments(
-            opts.projectRoot ? opts.name : opts.projectRoot,
-            file
-          ),
+          buildTarget: `${opts.projectName}:build`,
+          watch: true,
           hot: true,
-          watch: true
+          bun: true,
+          smol: false
         }
       }
     }

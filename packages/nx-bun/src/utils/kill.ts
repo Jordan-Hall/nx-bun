@@ -1,6 +1,6 @@
 import { UnifiedChildProcess, isBunSubprocess } from "./bun-cli";
 
-type Signal = 'SIGTERM' | 'SIGINT' | 'SIGHUP' | 'SIGKILL';  // Define more signals as needed
+export type Signal = 'SIGTERM' | 'SIGINT' | 'SIGHUP' | 'SIGKILL';  // Define more signals as needed
 
 export async function killCurrentProcess(childProcess: UnifiedChildProcess, signal: Signal) {
   try {

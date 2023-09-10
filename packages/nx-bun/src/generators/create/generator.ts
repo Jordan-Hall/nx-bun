@@ -134,11 +134,14 @@ async function normalizedSchema(tree: Tree, options: CreateGeneratorSchema) {
       names: projectNames,
       projectRoot,
       importPath,
-
     } = await determineProjectNameAndRootOptions(tree, {
       name: options.name,
       projectType: 'application',
       directory: options.directory,
+      importPath: options.importPath,
+      projectNameAndRootFormat: options.projectNameAndRootFormat,
+      rootProject: options.rootProject,
+      callingGenerator: '@nx-bun/nx:create'
     });
 
   const layout = getWorkspaceLayout(tree);
