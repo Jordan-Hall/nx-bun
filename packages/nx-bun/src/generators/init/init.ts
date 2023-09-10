@@ -27,9 +27,21 @@ export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
     } catch(e) {
       tasks.push(addDependenciesToPackageJson(tree, {}, { '@nx/jest': NX_VERSION}))
     }
-    const jestInitGenerator = await import ('@nx/js').then(m => m.initGenerator)
+    const jestInitGenerator = await import ('@nx/jest').then(m => m.jestInitGenerator)
     tasks.push(
       await jestInitGenerator(tree, {})
+    );
+  }
+
+  if (options.unitTestRunner === 'vitest') {
+    try {
+      ensurePackage('@nx/vite', NX_VERSION)
+    } catch(e) {
+      tasks.push(addDependenciesToPackageJson(tree, {}, { '@nx/vite': NX_VERSION}))
+    }
+    const viteInitGenerator = await import ('@nx/vite').then(m => m.initGenerator)
+    tasks.push(
+      await viteInitGenerator(tree, {uiFramework: 'none'})
     );
   }
 

@@ -1,6 +1,7 @@
 type BaseLib = {
   name: string;
   directory?: string;
+  unitTestRunner?: 'bun' | 'jest' | 'vitest' | 'none';
   tags?: string;
   skipFormat?: boolean;
   simpleName?: boolean;

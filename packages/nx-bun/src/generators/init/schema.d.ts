@@ -1,5 +1,5 @@
 export interface InitGeneratorSchema {
-    unitTestRunner?: 'bun' | 'jest' | 'none';
+    unitTestRunner?: 'bun' | 'jest' | 'vitest' | 'none';
     bunNXRuntime: boolean;
     forceBunInstall: boolean
 }
