@@ -6,4 +6,5 @@ Bun.serve({
     );
   },
 })
-console.log('running on port http://localhost:8080')
+
+console.log(`Running on port http://localhost:8080`)

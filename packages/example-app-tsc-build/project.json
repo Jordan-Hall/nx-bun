@@ -1,0 +1,46 @@
+{
+  "name": "example-app-tsc-build",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/example-app-tsc-build/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/example-app-tsc-build",
+        "tsConfig": "packages/example-app-tsc-build/tsconfig.app.json",
+        "main": "packages/example-app-tsc-build/src/main.ts",
+        "assets": []
+      }
+    },
+    "serve": {
+      "executor": "../../dist/packages/nx-bun:run",
+      "options": {
+        "buildTarget": "example-app-tsc-build:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/example-app-tsc-build/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "../../dist/packages/nx-bun:test",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/example-app-tsc-build/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

@@ -32,6 +32,11 @@
             "input": "./packages/nx-bun",
             "glob": "executors.json",
             "output": "."
+          },
+          {
+            "input": "./packages/nx-bun",
+            "glob": "migrations.json",
+            "output": "."
           }
         ]
       }
@@ -48,7 +53,8 @@
           "packages/nx-bun/**/*.ts",
           "packages/nx-bun/package.json",
           "packages/nx-bun/generators.json",
-          "packages/nx-bun/executors.json"
+          "packages/nx-bun/executors.json",
+          "packages/nx-bun/migrations.json"
         ]
       }
     },

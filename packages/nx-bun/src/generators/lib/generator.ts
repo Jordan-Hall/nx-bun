@@ -28,7 +28,6 @@ import { getRootTsConfigPathInTree } from '@nx/js';
 import initGenerator from '../init/init';
 import { createSourceFile, ScriptTarget } from 'typescript';
 import { addImport } from '../../utils/add-import';
-import { updateTsConfig } from '../../utils/ts-config';
 
 export interface NormalizedSchema extends LibUnderhood {
   name: string;
@@ -54,15 +53,15 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
 
   ensurePackage('@nx/js', NX_VERSION);
   const jsLibraryGenerator = await import ('@nx/js').then(m => m.libraryGenerator)
+
   const libraryInstall = await jsLibraryGenerator(tree, {
-    ...opts,
-    name: opts.name,
-    bundler: 'none',
+    ...options,
+    name: options.name,
     includeBabelRc: opts.unitTestRunner !== 'bun' && opts.unitTestRunner !== 'none',
-    importPath: opts.importPath,
+    importPath: options.importPath,
     testEnvironment: 'node',
-    unitTestRunner: opts.unitTestRunner === 'bun' ? 'none' : opts.unitTestRunner,
     skipFormat: true,
+    unitTestRunner: options.unitTestRunner === 'bun' ? 'none' : options.unitTestRunner,
   });
   tasks.push(libraryInstall);
 
@@ -71,7 +70,7 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
 
   createFiles(tree, opts)
   if (opts.publishable) {
-    updateProject(tree,opts, entryPoints);
+    tasks.push(updateProject(tree,opts, entryPoints));
   }
   await formatFiles(tree);
 
@@ -101,6 +100,9 @@ async function normalizeOptions(
     projectType: 'library',
     directory: options.directory,
     importPath: options.importPath,
+    rootProject: options.rootProject,
+    projectNameAndRootFormat: options.projectNameAndRootFormat,
+    callingGenerator: '@nx-bun/nx:lib'
   });
 
 
@@ -177,7 +179,7 @@ function createFiles(tree: Tree, options: NormalizedSchema) {
 }
 
 
-function updateProject(tree: Tree, options: NormalizedSchema, entryPoints: string[]) {
+function updateProject(tree: Tree, options: NormalizedSchema, entryPoints: string[]): GeneratorCallback {
   const project = readProjectConfiguration(tree, options.projectName);
   project.targets = project.targets || {};
   const build: TargetConfiguration<BundleExecutorSchema> = {
@@ -209,6 +211,7 @@ function updateProject(tree: Tree, options: NormalizedSchema, entryPoints: strin
     project.targets['test'] = test
   }
   updateProjectConfiguration(tree, options.projectName, project);
+  return () => {}
 }
 
 export default libGenerator;

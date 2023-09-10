@@ -1,0 +1,15 @@
+{
+  "generators": {
+    "build-target-run": {
+      "version": "0.2.1",
+      "description": "build-target-run",
+      "implementation": "./src/migrations/build-target-run/build-target-run"
+    }
+  },
+  "packageJsonUpdates": {
+    "0.2.1": {
+      "version": "0.2.1",
+      "packages": {}
+    }
+  }
+}

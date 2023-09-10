@@ -5,10 +5,14 @@
   "description": "",
   "type": "object",
   "properties": {
-    "main": {
+    "buildTarget": {
       "type": "string",
-      "description": "The target file to run",
-      "x-priority": "important"
+      "description": "The target to run to build you the app."
+    },
+    "buildTargetOptions": {
+      "type": "object",
+      "description": "Additional options to pass into the build target.",
+      "default": {}
     },
     "watch": {
       "type": "boolean",

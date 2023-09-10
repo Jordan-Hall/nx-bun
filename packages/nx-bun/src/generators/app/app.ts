@@ -59,20 +59,20 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
       smol: false,
       bun: true
     }
-  }
+  };
 
   const serve: TargetConfiguration<RunExecutorSchema> = {
     executor: '@nx-bun/nx:run',
     defaultConfiguration: "development",
     options: {
-      main: joinPathFragments(opts.projectRoot, 'src', 'main.ts'),
+      buildTarget: `${opts.projectName}:build`,
       tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
       watch: true,
       hot: true,
       bun: true,
       smol: false
     }
-  }
+  };
 
   const test: TargetConfiguration<TestExecutorSchema> = {
     executor: '@nx-bun/nx:test',
@@ -85,7 +85,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
   }
 
 
-  addProjectConfiguration(tree, options.name, {
+  addProjectConfiguration(tree, opts.projectName, {
     root: opts.projectRoot,
     projectType: 'application',
     sourceRoot: `${opts.projectRoot}/src`,
@@ -116,6 +116,9 @@ async function normalizeOptions(
     name: options.name,
     projectType: 'application',
     directory: options.directory,
+    projectNameAndRootFormat: options.projectNameAndRootFormat,
+    rootProject: options.rootProject,
+    callingGenerator: '@nx-bun/nx:application'
   });
 
 
