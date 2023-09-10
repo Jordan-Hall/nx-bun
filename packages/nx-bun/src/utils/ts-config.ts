@@ -1,6 +1,6 @@
 import { Tree, stripIndents, updateJson, writeJson } from '@nx/devkit';
 
-export function getRootTsConfigPathInTree(tree: Tree): string | null {
+export function getRootTsConfigPathInTree(tree: Tree) {
     for (const path of ['tsconfig.base.json', 'tsconfig.json']) {
         if (tree.exists(path)) {
             return path;
@@ -13,9 +13,9 @@ export interface TsConfigPaths {
 }
 
 
-export function updateTsConfig(tree: Tree, options: { importPath: string, entryPoints: string[] }) {
+export function updateTsConfig(tree: Tree, options?: { importPath: string, entryPoints: string[] }) {
     const rootTsConfig = getRootTsConfigPathInTree(tree);
-    const newPaths = options.entryPoints.map(entry =>
+    const newPaths = options?.entryPoints?.map(entry =>
         entry.startsWith('./')
             ? entry.slice(2)
             : entry)
@@ -40,23 +40,26 @@ export function updateTsConfig(tree: Tree, options: { importPath: string, entryP
                 skipLibCheck: true,
                 skipDefaultLibCheck: true,
                 baseUrl: ".",
-                paths: {
+                paths: options?.importPath && newPaths ? {
                     [options.importPath]: newPaths
-                }
+                } : {}
             },
             exclude: ["node_modules", "tmp"]
         })
+        return;
     }
-    updateJson(tree, rootTsConfig, (json) => {
-        json.compilerOptions.paths = json.compilerOptions?.paths || {};
-        if (json.compilerOptions.paths[options.importPath]) {
-            throw new Error(stripIndents`Import path already exists in ${rootTsConfig} for ${options.importPath}.
-You can specify a different import path using the --import-path option.
-The value needs to be unique and not already used in the ${rootTsConfig} file.`);
-        }
+    if (options) {
+        updateJson(tree, rootTsConfig, (json) => {
+            json.compilerOptions.paths = json.compilerOptions?.paths || {};
+            if (json.compilerOptions.paths[options.importPath]) {
+                throw new Error(stripIndents`Import path already exists in ${rootTsConfig} for ${options.importPath}.
+    You can specify a different import path using the --import-path option.
+    The value needs to be unique and not already used in the ${rootTsConfig} file.`);
+            }
 
-        json.compilerOptions.paths[options.importPath] = newPaths;
+            json.compilerOptions.paths[options.importPath] = newPaths;
 
-        return json;
-    })
+            return json;
+        })
+    }
 }

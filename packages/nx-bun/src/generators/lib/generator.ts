@@ -18,7 +18,7 @@ import {
 import { LibGeneratorSchema,LibUnderhood } from './schema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
-import { updateTsConfig } from '../../utils/ts-config';
+import { getRootTsConfigPathInTree, updateTsConfig } from '../../utils/ts-config';
 
 export interface NormalizedSchema extends LibUnderhood {
   name: string;
@@ -35,13 +35,6 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
   const opts = await normalizeOptions(tree, options);
 
   const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'index.ts')]
-
-  const templateOptions = {
-    ...opts,
-    template: '',
-    cliCommand: 'nx',
-    offsetFromRoot: offsetFromRoot(opts.projectRoot)
-  };
 
   const build: TargetConfiguration<BundleExecutorSchema> = {
     executor: '@nx-bun/nx:build',
@@ -76,11 +69,20 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
       test
     },
   });
+  const templateOptions = {
+    ...opts,
+    template: '',
+    cliCommand: 'nx',
+    offsetFromRoot: offsetFromRoot(opts.projectRoot),
+    baseTsConfig: getRootTsConfigPathInTree(tree)
+  };
 
   generateFiles(tree, path.join(__dirname, 'files'), `${opts.projectRoot}`, templateOptions);
 
   if (opts.publishable) {
     updateTsConfig(tree, { entryPoints: entryPoints, importPath: opts.importPath })
+  } else {
+    updateTsConfig(tree);
   }
   await formatFiles(tree);
 }
