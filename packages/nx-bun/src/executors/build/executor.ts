@@ -124,7 +124,7 @@ function createArgs(options: BundleExecutorSchema, context: ExecutorContext): st
     }  
   
     if (options.config) {
-      args.push(`-c ${options.config}`)
+      args.push(`-c=${options.config}`)
     }
   
     args.push('build')

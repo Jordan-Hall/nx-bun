@@ -17,34 +17,47 @@ export default async function* runExecutor(options: TestExecutorSchema, context:
   yield* createAsyncIterable(async ({ next, done }) => {
     const runningBun = await executeCliAsync(args, { stdio: 'pipe', stderr: 'pipe', stdin: 'pipe', stdout: 'pipe' });
 
-    if (runningBun.stdout) {
-      if (parentPort) {
-        const text = await new Response(runningBun.stdout as  ReadableStream).text();
-        parentPort.postMessage({type: 'stdout', message: text})
-      } else {
-        (runningBun.stdout as Readable).on('data', (data) => {
-          if (parentPort) {
-            parentPort.postMessage({type: 'stdout', message: data})
-          } else {
-            console.log(`stdout: ${data}`);
+    if (isBunSubprocess(runningBun)) {
+      const writableStream = (type: 'stdout' | 'stderr') => {
+        const textDecoder = new TextDecoder();
+        return new WritableStream({
+          write(chunk) {
+            const text = textDecoder.decode(chunk);
+            if (parentPort) {
+              parentPort.postMessage({ type, message: text });
+            } else {
+              console.log(text);
+            }
+          },
+          close() {
+            console.log('Stream closed');
+          },
+          abort(err) {
+            console.error('Stream aborted', err);
           }
         });
       }
-    }
+      (runningBun.stdout as ReadableStream<Buffer>).pipeTo(writableStream('stdout'));
+      (runningBun.stderr as ReadableStream<Buffer>).pipeTo(writableStream('stderr'));
+    } else {
+      const textDecoder = new TextDecoder();
+      runningBun.stdout.on('data', (data) => {
+        const textData = textDecoder.decode(data);
+        if (parentPort) {
+          parentPort.postMessage({ type: 'stdout', message: textData })
+        } else {
+          console.log(textData);
+        }
+      });
+      runningBun.stderr.on('data', (data) => {
+        const textData = textDecoder.decode(data);
+        if (parentPort) {
+          parentPort.postMessage({ type: 'stderr', message: textData })
+        } else {
+          console.log(textData);
+        }
+      });
 
-    if (runningBun.stderr) {
-      if (parentPort) {
-        const text = await new Response(runningBun.stderr as  ReadableStream).text();
-        parentPort.postMessage({type: 'stderr', message: text})
-      } else {
-        (runningBun.stderr as Readable).on('data', (data) => {
-          if (parentPort) {
-            parentPort.postMessage({type: 'stderr', message: data})
-          } else {
-            console.log(`stderr: ${data}`);
-          }
-        });
-      }
     }
 
     process.on('SIGTERM', async () => {
@@ -91,7 +104,7 @@ export default async function* runExecutor(options: TestExecutorSchema, context:
 }
 
 function createArgs(options: TestExecutorNormalizedSchema) {
-  const args: string[] = [`--cwd ${options.testDir}`];
+  const args: string[] = [`--cwd=${options.testDir}`];
 
   if (options.smol) {
     args.push('--smol');
@@ -106,17 +119,17 @@ function createArgs(options: TestExecutorNormalizedSchema) {
   if (typeof options.bail === 'boolean') {
     args.push('--bail')
   } else if (typeof options.bail === 'number') {
-    args.push(`--bail ${options.bail}`)
+    args.push(`--bail=${options.bail}`)
   }
   if (options.preload) {
-    args.push(`--preload ${options.preload}`)
+    args.push(`--preload=${options.preload}`)
   }
   if (options.timeout) {
-    args.push(`--timeout ${options.timeout}`)
+    args.push(`--timeout=${options.timeout}`)
   }
 
   if (options.rerunEach) {
-    args.push(`--rerun-each ${options.rerunEach}`)
+    args.push(`--rerun-each=${options.rerunEach}`)
   }
   if (options.watch) {
     args.push('--watch');

@@ -116,7 +116,7 @@ function createArgs(options: RunExecutorSchema, context: ExecutorContext) {
 
 
   if (options.config) {
-    args.push(`-c ${options.config}`)
+    args.push(`-c=${options.config}`)
   }
 
   args.push('run')

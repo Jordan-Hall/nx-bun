@@ -32,7 +32,7 @@
     },
     "rerun-each": {
       "type": "number",
-      "description": "run each test multiple times. This is useful for detecting flaky or non-deterministic test failures.",
+      "description": "run each test multiple times. This is useful for detecting flaky or non-deterministic test failures."
     },
     "smol": {
       "type": "boolean",
