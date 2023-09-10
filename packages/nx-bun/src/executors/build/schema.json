@@ -94,6 +94,10 @@
 		"config": {
 			"type": "string",
 			"description": "Config file to load bun from (e.g. -c bunfig.toml"
+		},
+		"tsconfig": {
+			"type": "string",
+			"description": "Load tsconfig from path instead of cwd/tsconfig.json"
 		}
 	},
 	"required": ["entrypoints", "outputPath"]

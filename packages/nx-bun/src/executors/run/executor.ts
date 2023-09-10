@@ -104,6 +104,9 @@ function createArgs(options: RunExecutorSchema, context: ExecutorContext) {
   if (options.bun) {
     args.push('--bun')
   }
+  if (options.tsconfig) {
+    args.push(`--tsconfig-override ${options.tsconfig}`)
+  }
   if (options.smol) {
     args.push('--smol');
   }
@@ -116,7 +119,7 @@ function createArgs(options: RunExecutorSchema, context: ExecutorContext) {
 
 
   if (options.config) {
-    args.push(`-c=${options.config}`)
+    args.push(`-c ${options.config}`)
   }
 
   args.push('run')

@@ -4,8 +4,9 @@ export interface TestExecutorSchema {
   preload?: string;
   timeout?: number;
   rerunEach?: number;
-  smol: boolean,
-  config?: string,
-  bun: boolean
+  smol: boolean;
+  config?: string;
+  bun: boolean;
+  tsconfig?: string;
 
 } // eslint-disable-line

@@ -124,7 +124,11 @@ function createArgs(options: BundleExecutorSchema, context: ExecutorContext): st
     }  
   
     if (options.config) {
-      args.push(`-c=${options.config}`)
+      args.push(`-c ${options.config}`)
+    }
+    
+    if (options.tsconfig) {
+      args.push(`--tsconfig-override ${options.tsconfig}`)
     }
   
     args.push('build')

@@ -1,5 +1,4 @@
 import {
-  addProjectConfiguration,
   formatFiles,
   generateFiles,
   names,
@@ -180,8 +179,6 @@ function createFiles(tree: Tree, options: NormalizedSchema) {
 
 function updateProject(tree: Tree, options: NormalizedSchema, entryPoints: string[]) {
   const project = readProjectConfiguration(tree, options.projectName);
-  const rootProject = options.projectRoot === '.' || options.projectRoot === '';
-
   project.targets = project.targets || {};
   const build: TargetConfiguration<BundleExecutorSchema> = {
     executor: '@nx-bun/nx:build',
@@ -190,8 +187,9 @@ function updateProject(tree: Tree, options: NormalizedSchema, entryPoints: strin
       entrypoints: entryPoints,
       outputPath: joinPathFragments(
         'dist',
-        opts.projectRoot ? opts.name : opts.projectRoot,
+        options.projectRoot ? options.name : options.projectRoot,
       ),
+      tsconfig: joinPathFragments(options.projectRoot, `tsconfig.lib.json`),
       smol: false,
       bun: true
     }
