@@ -6,9 +6,10 @@ import {
   ensurePackage,
   NX_VERSION,
   addDependenciesToPackageJson,
-  runTasksInSerial
+  runTasksInSerial,
+  updateJson
 } from '@nx/devkit';
-import { initGenerator as jsInitGenerator } from '@nx/js';
+import { getRootTsConfigPathInTree, initGenerator as jsInitGenerator } from '@nx/js';
 import { InitGeneratorSchema } from './schema';
 import { assertBunAvailable } from '../../utils/bun-cli';
 
@@ -51,6 +52,17 @@ export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
     tasks.push(addBunPluginToNxJson(tree));
   }
 
+  tasks.push(addDependenciesToPackageJson(tree, {}, { 'bun-types': 'latest'}))
+  const rootTsConfig = getRootTsConfigPathInTree(tree);
+  updateJson(tree, rootTsConfig, (json) => {
+    if (json.compilerOptions.types && !json.compilerOptions.types.includes('bun-types')) {
+      json?.compilerOptions?.types.push('bun-types')
+    } else {
+      json.compilerOptions.types = ['bun-types'] 
+    }
+    return json;
+  })
+  
   return runTasksInSerial(...tasks);
 
 }

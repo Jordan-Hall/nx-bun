@@ -1,7 +1,7 @@
 import { readJson, readProjectConfiguration, Tree } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { appGenerator } from './app'
-import { getRootTsConfigPathInTree } from '../../utils/ts-config';
+import { getRootTsConfigPathInTree } from '@nx/js';
 
 describe('Bun App Generator', () => {
 	let tree: Tree;

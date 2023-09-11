@@ -18,7 +18,7 @@ import {
 import { AppGeneratorSchema, AppTypes } from './schema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
-import { getRootTsConfigPathInTree } from '../../utils/ts-config';
+import { getRootTsConfigPathInTree } from '@nx/js';
 import { RunExecutorSchema } from '../../executors/run/schema';
 import initGenerator from '../init/init';
 
@@ -55,6 +55,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
         'dist',
         opts.projectRoot ? opts.name : opts.projectRoot,
       ),
+      tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
       smol: false,
       bun: true
     }
@@ -65,6 +66,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     defaultConfiguration: "development",
     options: {
       main: joinPathFragments(opts.projectRoot, 'src', 'main.ts'),
+      tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
       watch: true,
       hot: true,
       bun: true,
@@ -77,6 +79,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     options: {
       smol: false,
       bail: true,
+      tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.json'),
       bun: true
     }
   }
@@ -164,6 +167,7 @@ function createFiles(tree: Tree, opts: NormalizedSchema) {
     'api': {
       genFiles: () => {
         tree.delete(joinPathFragments(opts.projectRoot, 'src', 'main.ts'));
+        tree.delete(joinPathFragments(opts.projectRoot, 'src', 'main.spec.ts'));
         generateFiles(tree, path.join(__dirname, 'files/api'), `${opts.projectRoot}`, templateOptions);
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function

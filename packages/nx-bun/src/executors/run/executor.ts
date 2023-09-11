@@ -100,12 +100,13 @@ export default async function* runExecutor(options: RunExecutorSchema, context: 
 
 function createArgs(options: RunExecutorSchema, context: ExecutorContext) {
 
-  const args: string[] = [];
+  const args: string[] = ['run'];
+  args.push(options.main);
   if (options.bun) {
     args.push('--bun')
   }
   if (options.tsconfig) {
-    args.push(`--tsconfig-override ${options.tsconfig}`)
+    args.push(`--tsconfig-override=${options.tsconfig}`)
   }
   if (options.smol) {
     args.push('--smol');
@@ -121,9 +122,5 @@ function createArgs(options: RunExecutorSchema, context: ExecutorContext) {
   if (options.config) {
     args.push(`-c ${options.config}`)
   }
-
-  args.push('run')
-  // make sure file is always last option
-  args.push(options.main);
   return args;
 }

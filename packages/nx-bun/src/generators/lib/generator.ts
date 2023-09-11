@@ -24,10 +24,11 @@ import {
 import { LibGeneratorSchema,LibUnderhood } from './schema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
-import { getRootTsConfigPathInTree, updateTsConfig } from '../../utils/ts-config';
+import { getRootTsConfigPathInTree } from '@nx/js';
 import initGenerator from '../init/init';
 import { createSourceFile, ScriptTarget } from 'typescript';
 import { addImport } from '../../utils/add-import';
+import { updateTsConfig } from '../../utils/ts-config';
 
 export interface NormalizedSchema extends LibUnderhood {
   name: string;
@@ -70,7 +71,6 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
 
   createFiles(tree, opts)
   if (opts.publishable) {
-    updateTsConfig(tree, { entryPoints: entryPoints, importPath: opts.importPath })
     updateProject(tree,opts, entryPoints);
   }
   await formatFiles(tree);

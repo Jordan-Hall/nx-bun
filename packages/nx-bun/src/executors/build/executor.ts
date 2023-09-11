@@ -118,7 +118,7 @@ export default async function* bundleExecutor(options: BundleExecutorSchema, con
   }
 }
 function createArgs(options: BundleExecutorSchema, context: ExecutorContext): string[] {
-  const args: string[] = [];
+  const args: string[] = ['build'];
 
     if (options.smol) {
       args.push('--smol');
@@ -129,10 +129,9 @@ function createArgs(options: BundleExecutorSchema, context: ExecutorContext): st
     }
     
     if (options.tsconfig) {
-      args.push(`--tsconfig-override ${options.tsconfig}`)
+      args.push(`--tsconfig-override=${options.tsconfig}`)
     }
-  
-    args.push('build')
+
 
     if (options.entrypoints) {
       args.push(`${options.entrypoints.join(' ./') }`);

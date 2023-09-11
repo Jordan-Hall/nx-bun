@@ -1,16 +1,5 @@
 import { Tree, stripIndents, updateJson, writeJson } from '@nx/devkit';
-
-export function getRootTsConfigPathInTree(tree: Tree) {
-    for (const path of ['tsconfig.base.json', 'tsconfig.json']) {
-        if (tree.exists(path)) {
-            return path;
-        }
-    }
-    return 'tsconfig.base.json';
-}
-export interface TsConfigPaths {
-    compilerOptions: { paths?: Record<string, string[]>; baseUrl?: string };
-}
+import { getRootTsConfigPathInTree } from '@nx/js';
 
 
 export function updateTsConfig(tree: Tree, options?: { importPath: string, entryPoints: string[] }) {

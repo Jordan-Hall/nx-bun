@@ -103,7 +103,7 @@ export default async function* runExecutor(options: TestExecutorSchema, context:
 }
 
 function createArgs(options: TestExecutorNormalizedSchema) {
-  const args: string[] = [`--cwd=${options.testDir}`];
+  const args: string[] = ['test',`--cwd=${options.testDir}`];
 
   if (options.smol) {
     args.push('--smol');
@@ -113,9 +113,8 @@ function createArgs(options: TestExecutorNormalizedSchema) {
     args.push(`-c ${options.config}`)
   }
   if (options.tsconfig) {
-    args.push(`--tsconfig-override ${options.tsconfig}`)
+    args.push(`--tsconfig-override=${options.tsconfig}`)
   }
-  args.push('test')
 
   if (typeof options.bail === 'boolean') {
     args.push('--bail')
