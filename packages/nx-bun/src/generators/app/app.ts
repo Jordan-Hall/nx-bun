@@ -15,11 +15,13 @@ import {
   determineProjectNameAndRootOptions,
   type ProjectNameAndRootOptions,
 } from '@nx/devkit/src/generators/project-name-and-root-utils';
-import { AppGeneratorSchema } from './schema';
+import { AppGeneratorSchema, AppTypes } from './schema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
-import { getRootTsConfigPathInTree, updateTsConfig } from '../../utils/ts-config';
+import { getRootTsConfigPathInTree } from '@nx/js';
 import { RunExecutorSchema } from '../../executors/run/schema';
+import initGenerator from '../init/init';
+
 
 export interface NormalizedSchema extends AppGeneratorSchema {
   name: string;
@@ -32,18 +34,17 @@ export interface NormalizedSchema extends AppGeneratorSchema {
   propertyName: string
 }
 
+type AppStructure = {
+  genFiles: () => void;
+  packageInstall: () => void;
+};
+type ApplicationGeneration =  Partial<Record<AppTypes, AppStructure>>;
 export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
   const opts = await normalizeOptions(tree, options);
 
-  const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'index.ts')]
+  await initGenerator(tree, {bunNXRuntime: false, forceBunInstall: false})
 
-  const templateOptions = {
-    ...opts,
-    template: '',
-    cliCommand: 'nx',
-    offsetFromRoot: offsetFromRoot(opts.projectRoot),
-    baseTsConfig: getRootTsConfigPathInTree(tree)
-  };
+  const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'main.ts')]
 
   const build: TargetConfiguration<BundleExecutorSchema> = {
     executor: '@nx-bun/nx:build',
@@ -54,6 +55,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
         'dist',
         opts.projectRoot ? opts.name : opts.projectRoot,
       ),
+      tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
       smol: false,
       bun: true
     }
@@ -63,7 +65,8 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     executor: '@nx-bun/nx:run',
     defaultConfiguration: "development",
     options: {
-      main: joinPathFragments(opts.projectRoot, 'src', 'index.ts'),
+      main: joinPathFragments(opts.projectRoot, 'src', 'main.ts'),
+      tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
       watch: true,
       hot: true,
       bun: true,
@@ -76,6 +79,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     options: {
       smol: false,
       bail: true,
+      tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.json'),
       bun: true
     }
   }
@@ -92,10 +96,8 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     },
   });
 
-  generateFiles(tree, path.join(__dirname, 'files'), `${opts.projectRoot}`, templateOptions);
-
-  // ensure tscondig exists
-  updateTsConfig(tree);
+  createFiles(tree, opts)
+  
 
   await formatFiles(tree);
 }
@@ -149,5 +151,35 @@ function getCaseAwareFileName(options: {
 }
 
 
+function createFiles(tree: Tree, opts: NormalizedSchema) {
+
+  const templateOptions = {
+    ...opts,
+    template: '',
+    cliCommand: 'nx',
+    offsetFromRoot: offsetFromRoot(opts.projectRoot),
+    baseTsConfig: getRootTsConfigPathInTree(tree)
+  };
+
+  generateFiles(tree, path.join(__dirname, 'files/common'), `${opts.projectRoot}`, templateOptions);
+
+  const applicationType: ApplicationGeneration = {
+    'api': {
+      genFiles: () => {
+        tree.delete(joinPathFragments(opts.projectRoot, 'src', 'main.ts'));
+        tree.delete(joinPathFragments(opts.projectRoot, 'src', 'main.spec.ts'));
+        generateFiles(tree, path.join(__dirname, 'files/api'), `${opts.projectRoot}`, templateOptions);
+      },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      packageInstall: () => {}
+    },
+  }
+
+  const genAppDetails = applicationType[opts.applicationType];
+  genAppDetails?.genFiles();
+  genAppDetails?.packageInstall();
+  
+}
 
 export default appGenerator;
+

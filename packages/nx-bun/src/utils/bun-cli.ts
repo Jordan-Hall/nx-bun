@@ -4,7 +4,7 @@ import { ChildProcess, spawn } from 'node:child_process';
 import { parentPort, workerData, } from 'worker_threads';
 
 // Detect environment
-const isBun = typeof Bun !== 'undefined';
+const isBun = typeof globalThis.Bun !== 'undefined';
 
 // Unified interfaces
 type ExecOptions = BunExecOptions | NodeExecOptions;
@@ -37,15 +37,24 @@ export function isBunSubprocess(process: UnifiedChildProcess): process is Subpro
   return isBun && 'exited' in process;
 }
 
-export async function assertBunAvailable() {
+export async function assertBunAvailable(forceInstall = false) {
   try {
     if (isBun) {
       Bun.spawnSync({ cmd: ['bun', '--version'] });
+      return Promise.resolve(true);
     } else {
       const { execSync } = await import('child_process');
       execSync('bun --version');
+      return Promise.resolve(true);
     }
   } catch (e) {
+    if (forceInstall && !process.env.NX_DRY_RUN) {
+      const { execSync } = await import('child_process');
+      execSync(`curl -fsSL https://bun.sh/install | bash`)
+      return Promise.resolve(true);
+    } else if (forceInstall) {
+      throw new Error(stripIndents`force install of bun is not supported in dry-run`)
+    }
     throw new Error(stripIndents`Unable to find Bun on your system.
         Bun will need to be installed in order to run targets from nx-bun in this workspace.
         You can learn how to install bun at https://bun.sh/docs/installation

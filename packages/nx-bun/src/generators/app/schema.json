@@ -13,6 +13,14 @@
       },
       "x-prompt": "What name would you like to use?"
     },
+    "applicationType": {
+      "description": "Generate the node application using a framework",
+      "type": "string",
+      "enum": ["api", "none"],
+      "default": "api",
+      "x-prompt": "What of app/framework do you want to use?",
+      "x-priority": "important"
+    },
     "directory": {
       "type": "string",
       "description": "A directory where the lib is placed.",

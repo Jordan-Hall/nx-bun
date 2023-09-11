@@ -2,7 +2,6 @@ import { TestExecutorSchema } from './schema';
 import { createAsyncIterable } from '@nx/devkit/src/utils/async-iterable';
 import { assertBunAvailable, executeCliAsync, isBunSubprocess } from '../../utils/bun-cli';
 import { parentPort, } from 'worker_threads';
-import { Readable } from 'node:stream';
 import { killCurrentProcess } from '../../utils/kill';
 import { ExecutorContext } from '@nx/devkit';
 
@@ -11,7 +10,7 @@ interface TestExecutorNormalizedSchema extends TestExecutorSchema {
 }
 
 export default async function* runExecutor(options: TestExecutorSchema, context: ExecutorContext) {
-  assertBunAvailable();
+  await assertBunAvailable();
   const opts = normalizeOptions(options, context);
   const args = createArgs(opts);
   yield* createAsyncIterable(async ({ next, done }) => {
@@ -104,7 +103,7 @@ export default async function* runExecutor(options: TestExecutorSchema, context:
 }
 
 function createArgs(options: TestExecutorNormalizedSchema) {
-  const args: string[] = [`--cwd=${options.testDir}`];
+  const args: string[] = ['test',`--cwd=${options.testDir}`];
 
   if (options.smol) {
     args.push('--smol');
@@ -113,8 +112,9 @@ function createArgs(options: TestExecutorNormalizedSchema) {
   if (options.config) {
     args.push(`-c ${options.config}`)
   }
-
-  args.push('test')
+  if (options.tsconfig) {
+    args.push(`--tsconfig-override=${options.tsconfig}`)
+  }
 
   if (typeof options.bail === 'boolean') {
     args.push('--bail')

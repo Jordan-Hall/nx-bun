@@ -7,7 +7,7 @@
       "x-use-standalone-layout": true
     },
     "init": {
-      "factory": "./src/generators/init/generator",
+      "factory": "./src/generators/init/init",
       "schema": "./src/generators/init/schema.json",
       "description": "init generator"
     },

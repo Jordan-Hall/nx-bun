@@ -3,7 +3,7 @@ import { Tree, readJson, readProjectConfiguration } from '@nx/devkit';
 
 import { libGenerator } from './generator';
 import { LibGeneratorSchema } from './schema';
-import { getRootTsConfigPathInTree } from '../../utils/ts-config';
+import { getRootTsConfigPathInTree } from '@nx/js';
 
 describe('lib generator', () => {
   let tree: Tree;

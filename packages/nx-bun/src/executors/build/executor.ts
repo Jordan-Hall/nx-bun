@@ -7,8 +7,8 @@ import { killCurrentProcess } from '../../utils/kill';
 
 export default async function* bundleExecutor(options: BundleExecutorSchema, context: ExecutorContext) {
 
-  assertBunAvailable();
-  if (globalThis.Bun !== undefined) {
+  await assertBunAvailable();
+  if (globalThis.Bun !== undefined && !options.complie) {
     const result = await Bun.build({
       entrypoints: options.entrypoints,
       define: options.define,
@@ -20,7 +20,8 @@ export default async function* bundleExecutor(options: BundleExecutorSchema, con
       publicPath: options.publicPath,
       sourcemap: options.sourcemap,
       splitting: options.splitting,
-      target: options.target
+      target: options.target,
+      
     })
     for (const log of result.logs) {
       console.log(log)
@@ -117,17 +118,20 @@ export default async function* bundleExecutor(options: BundleExecutorSchema, con
   }
 }
 function createArgs(options: BundleExecutorSchema, context: ExecutorContext): string[] {
-  const args: string[] = [];
+  const args: string[] = ['build'];
 
     if (options.smol) {
       args.push('--smol');
     }  
   
     if (options.config) {
-      args.push(`-c=${options.config}`)
+      args.push(`-c ${options.config}`)
     }
-  
-    args.push('build')
+    
+    if (options.tsconfig) {
+      args.push(`--tsconfig-override=${options.tsconfig}`)
+    }
+
 
     if (options.entrypoints) {
       args.push(`${options.entrypoints.join(' ./') }`);
@@ -152,13 +156,16 @@ function createArgs(options: BundleExecutorSchema, context: ExecutorContext): st
     if (options.outputPath) {
       args.push(`--outdir=./${options.outputPath}`);
     }
-
+    
+    if (options.complie) {
+      args.push('--complie')
+    }
     if (options.plugins) {
-      console.warn(`plugin is only support with --bun flag`)
+      console.warn(`plugin is only support with --bun flag, and not in conjuction with --complie`)
     }
 
     if (options.publicPath) {
-      console.warn(`publicPath is only support with --bun flag`)
+      console.warn(`publicPath is only support with --bun flag, and not in conjuction with --complie`)
     }
 
     return args;

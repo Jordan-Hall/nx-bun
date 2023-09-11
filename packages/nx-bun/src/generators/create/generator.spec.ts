@@ -4,7 +4,7 @@ import { readJson, readProjectConfiguration } from '@nx/devkit';
 import { createGenerator } from './generator';
 import { CreateGeneratorSchema } from './schema';
 import { FsTree } from 'nx/src/generators/tree';
-import { getRootTsConfigPathInTree } from '../../utils/ts-config';
+import { getRootTsConfigPathInTree } from '@nx/js';
 
 describe('preset generator', () => {
   let tree: FsTree;

@@ -14,6 +14,12 @@
       "x-prompt": "What name would you like to use for the library?",
       "pattern": "(?:^@[a-zA-Z0-9-*~][a-zA-Z0-9-*._~]*\\/[a-zA-Z0-9-~][a-zA-Z0-9-._~]*|^[a-zA-Z][^:]*)$"
     },
+    "unitTestRunner": {
+      "description": "Adds the specified unit test runner.",
+      "type": "string",
+      "enum": ["bun", "jest", "none"],
+      "default": "bun"
+    },
     "directory": {
       "type": "string",
       "description": "A directory where the lib is placed.",
