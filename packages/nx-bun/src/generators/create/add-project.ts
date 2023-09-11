@@ -35,6 +35,7 @@ export function addProjectFromScript(host: Tree, opts: NormalizedSchema, file: s
             opts.projectRoot ? opts.name : opts.projectRoot,
             file
           ),
+          hot: true,
           watch: true
         }
       }

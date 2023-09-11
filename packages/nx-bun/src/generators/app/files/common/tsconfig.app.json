@@ -1,5 +1,5 @@
 {
-  "extends": "<%= offsetFromRoot %><%= baseTsConfig %>",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "<%= offsetFromRoot %>dist/out-tsc",
     "declaration": true,

@@ -15,10 +15,10 @@ import {
   determineProjectNameAndRootOptions,
   type ProjectNameAndRootOptions,
 } from '@nx/devkit/src/generators/project-name-and-root-utils';
-import { AppGeneratorSchema } from './schema';
+import { AppGeneratorSchema, AppTypes } from './schema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
-import { getRootTsConfigPathInTree, updateTsConfig } from '../../utils/ts-config';
+import { getRootTsConfigPathInTree } from '../../utils/ts-config';
 import { RunExecutorSchema } from '../../executors/run/schema';
 import initGenerator from '../init/init';
 
@@ -34,20 +34,17 @@ export interface NormalizedSchema extends AppGeneratorSchema {
   propertyName: string
 }
 
+type AppStructure = {
+  genFiles: () => void;
+  packageInstall: () => void;
+};
+type ApplicationGeneration =  Partial<Record<AppTypes, AppStructure>>;
 export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
   const opts = await normalizeOptions(tree, options);
 
   await initGenerator(tree, {})
 
-  const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'index.ts')]
-
-  const templateOptions = {
-    ...opts,
-    template: '',
-    cliCommand: 'nx',
-    offsetFromRoot: offsetFromRoot(opts.projectRoot),
-    baseTsConfig: getRootTsConfigPathInTree(tree)
-  };
+  const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'main.ts')]
 
   const build: TargetConfiguration<BundleExecutorSchema> = {
     executor: '@nx-bun/nx:build',
@@ -67,7 +64,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     executor: '@nx-bun/nx:run',
     defaultConfiguration: "development",
     options: {
-      main: joinPathFragments(opts.projectRoot, 'src', 'index.ts'),
+      main: joinPathFragments(opts.projectRoot, 'src', 'main.ts'),
       watch: true,
       hot: true,
       bun: true,
@@ -96,7 +93,8 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     },
   });
 
-  generateFiles(tree, path.join(__dirname, 'files'), `${opts.projectRoot}`, templateOptions);
+  createFiles(tree, opts)
+  
 
   await formatFiles(tree);
 }
@@ -150,5 +148,34 @@ function getCaseAwareFileName(options: {
 }
 
 
+function createFiles(tree: Tree, opts: NormalizedSchema) {
+
+  const templateOptions = {
+    ...opts,
+    template: '',
+    cliCommand: 'nx',
+    offsetFromRoot: offsetFromRoot(opts.projectRoot),
+    baseTsConfig: getRootTsConfigPathInTree(tree)
+  };
+
+  generateFiles(tree, path.join(__dirname, 'files/common'), `${opts.projectRoot}`, templateOptions);
+
+  const applicationType: ApplicationGeneration = {
+    'api': {
+      genFiles: () => {
+        tree.delete(joinPathFragments(opts.projectRoot, 'src', 'main.ts'));
+        generateFiles(tree, path.join(__dirname, 'files/api'), `${opts.projectRoot}`, templateOptions);
+      },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      packageInstall: () => {}
+    },
+  }
+
+  const genAppDetails = applicationType[opts.applicationType];
+  genAppDetails?.genFiles();
+  genAppDetails?.packageInstall();
+  
+}
 
 export default appGenerator;
+

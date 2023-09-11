@@ -169,7 +169,6 @@ function createArgs(options: BundleExecutorSchema, context: ExecutorContext): st
       console.warn(`publicPath is only support with --bun flag, and not in conjuction with --complie`)
     }
 
-
     return args;
 }
 

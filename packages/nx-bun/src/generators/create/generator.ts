@@ -1,9 +1,12 @@
 import {
+  addDependenciesToPackageJson,
   formatFiles,
+  GeneratorCallback,
   getWorkspaceLayout,
   joinPathFragments,
   names,
   offsetFromRoot,
+  runTasksInSerial,
   Tree,
   updateJson,
 } from '@nx/devkit';
@@ -13,17 +16,21 @@ import { executeCliWithLogging } from '../../utils/bun-cli';
 import { join } from 'path';
 import { NormalizedSchema } from './NormalizedSchema';
 import { addProjectFromScript } from './add-project';
-import * as semver from 'semver'
 import initGenerator from '../init/init';
 import { readdirSync, rmSync } from 'fs';
 import { readFileIfExisting } from 'nx/src/utils/fileutils';
 import { updateTsConfig } from '../../utils/ts-config';
+import { determineProjectNameAndRootOptions } from '@nx/devkit/src/generators/project-name-and-root-utils';
 
 export async function createGenerator(
   tree: FsTree,
   options: CreateGeneratorSchema
 ) {
-  await initGenerator(tree, {})
+  const tasks: GeneratorCallback[] = [];
+
+  tasks.push(
+    await initGenerator(tree, {bunNXRuntime: false, forceBunInstall: false})
+  );
 
   const opts = normalizedSchema(tree, options);
 
@@ -70,11 +77,8 @@ export async function createGenerator(
     return file
   });
 
-  updateJson(tree, 'package.json', (pkg) => {
-    pkg.dependencies = mergeDependencies(pkg.dependencies, dependencies)
-    pkg.devDependencies = mergeDependencies(pkg.devDependencies, devDependencies)
-    return pkg
-  });
+  addDependenciesToPackageJson(tree, dependencies, devDependencies)
+
   const scriptToRun = scripts.start ? scripts.start : scripts.dev ? scripts.dev : null;
   if (scriptToRun) {
     const baseFileToRun = findFileToRun(tree, scriptToRun, opts.projectRoot);
@@ -93,6 +97,8 @@ export async function createGenerator(
   }
 
   await formatFiles(tree);
+
+  return runTasksInSerial(...tasks);
 }
 
 
@@ -118,48 +124,40 @@ function createArgs(
   return args;
 }
 
-function normalizedSchema(tree: Tree, options: CreateGeneratorSchema): NormalizedSchema {
+async function normalizedSchema(tree: Tree, options: CreateGeneratorSchema): NormalizedSchema {
   const name = names(options.name).fileName;
   const projectDirectory = options.directory
     ? `${names(options.directory).fileName}/${name}`
     : name;
+    const {
+      projectName,
+      names: projectNames,
+      projectRoot,
+      importPath,
 
-  const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
+    } = await determineProjectNameAndRootOptions(tree, {
+      name: options.name,
+      projectType: 'application',
+      directory: options.directory,
+    });
+
   const layout = getWorkspaceLayout(tree);
-  const projectRoot = joinPathFragments(
-    options.type === 'library' ? (layout.libsDir === '.' ? '' : layout.libsDir) : (layout.appsDir === '.' ? '' : layout.appsDir),
-    projectDirectory
-  );
+
   return {
     ...options,
     name,
     projectDirectory,
     projectName,
+    projectNames,
     layout,
-    projectRoot
+    projectRoot,
+    importPath
   }
 }
-
 
 function findFileToRun(host: Tree, script: string, projectRoot: string) {
   const afterRun = script.split('run')[1].split(' ').filter(s => s.length);
   return afterRun.find(path => host.exists(join(projectRoot, path)));
-}
-
-function mergeDependencies(dep1: Record<string, string>, dep2: Record<string, string>) {
-  const merged = { ...dep1 };
-
-  for (const pkg in dep2) {
-    if (!merged[pkg]) {
-      merged[pkg] = dep2[pkg];
-    } else {
-      // Compare versions and use the highest one
-      const isLatest = dep2[pkg] === 'latest' || merged[pkg] === 'latest'
-      merged[pkg] = isLatest ? 'latest' : semver.gt(dep2[pkg], merged[pkg]) ? dep2[pkg] : merged[pkg];
-    }
-  }
-
-  return merged;
 }
 
 export default createGenerator;
