@@ -32,7 +32,7 @@ export async function createGenerator(
     await initGenerator(tree, {bunNXRuntime: false, forceBunInstall: false})
   );
 
-  const opts = normalizedSchema(tree, options);
+  const opts = await normalizedSchema(tree, options);
 
   const args = createArgs(opts)
   await executeCliWithLogging(args, {
@@ -124,7 +124,7 @@ function createArgs(
   return args;
 }
 
-async function normalizedSchema(tree: Tree, options: CreateGeneratorSchema): NormalizedSchema {
+async function normalizedSchema(tree: Tree, options: CreateGeneratorSchema) {
   const name = names(options.name).fileName;
   const projectDirectory = options.directory
     ? `${names(options.directory).fileName}/${name}`

@@ -42,7 +42,7 @@ type ApplicationGeneration =  Partial<Record<AppTypes, AppStructure>>;
 export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
   const opts = await normalizeOptions(tree, options);
 
-  await initGenerator(tree, {})
+  await initGenerator(tree, {bunNXRuntime: false, forceBunInstall: false})
 
   const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'main.ts')]
 
