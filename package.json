@@ -1,7 +1,7 @@
 {
   "name": "@nx-bun/source",
   "version": "0.0.0",
-  "license": "MIT",
+  "license": "IDGAF-1.0",
   "scripts": {
     "docs:build": "vitepress build docs",
     "documentation": "ts-node -P tools/scripts/tsconfig.scripts.json ./tools/scripts/documentation/documentation.ts"
