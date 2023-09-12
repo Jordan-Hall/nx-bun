@@ -44,7 +44,7 @@ function _resolver(
 export function createSchemaFlattener(
   formats: schema.SchemaFormat[] = []
 ): SchemaFlattener {
-  const ajv = new Ajv({ passContext: true });
+  const ajv = new Ajv({ passContext: true, strict: false });
   for (const format of formats) {
     ajv.addFormat(format.name, format.formatter as any);
   }
