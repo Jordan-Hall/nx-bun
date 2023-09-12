@@ -6,6 +6,12 @@ Options can be configured in the 'project.json' when defining the executor, or w
 
 ### Options
 
+#### buildTarget
+
+Type: `string`
+
+The target to run to build you the app.
+
 #### bun
 
 Default: `false`
@@ -27,12 +33,6 @@ Default: `true`
 Type: `boolean`
 
 Enable auto reload in bun's JavaScript runtime
-
-#### main
-
-Type: `string`
-
-The target file to run
 
 #### smol
 

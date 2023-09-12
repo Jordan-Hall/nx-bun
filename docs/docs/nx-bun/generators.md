@@ -56,6 +56,14 @@ Type: `string`
 
 The library name used to import it, like @myorg/my-awesome-lib. Required for publishable library.
 
+#### projectNameAndRootFormat
+
+Type: `string`
+
+Possible values: `as-provided`, `derived`
+
+Whether to generate the project name and root directory as provided (`as-provided`) or generate them composing their values and taking the configured layout into account (`derived`).
+
 #### publishable
 
 Default: `false`
@@ -63,6 +71,14 @@ Default: `false`
 Type: `boolean`
 
 Generate a publishable library.
+
+#### rootProject (**hidden**)
+
+Default: `false`
+
+Type: `boolean`
+
+Create node application at the root of the workspace
 
 ## @nx-bun/nx-bun:init
 
@@ -142,15 +158,25 @@ Library name.
 
 #### directory
 
+Alias(es): dir
+
 Type: `string`
 
-A directory where the lib is placed.
+A directory where the lib is placed
 
 #### importPath
 
 Type: `string`
 
 The library name used to import it, like @myorg/my-awesome-lib. Required for publishable library.
+
+#### projectNameAndRootFormat
+
+Type: `string`
+
+Possible values: `as-provided`, `derived`
+
+Whether to generate the project name and root directory as provided (`as-provided`) or generate them composing their values and taking the configured layout into account (`derived`).
 
 #### publishable
 
@@ -159,6 +185,14 @@ Default: `false`
 Type: `boolean`
 
 Generate a publishable library.
+
+#### rootProject (**hidden**)
+
+Default: `false`
+
+Type: `boolean`
+
+Create node application at the root of the workspace
 
 #### simpleName
 
@@ -236,7 +270,23 @@ Generate the node application using a framework
 
 Type: `string`
 
-A directory where the lib is placed.
+The directory of the new application.
+
+#### projectNameAndRootFormat
+
+Type: `string`
+
+Possible values: `as-provided`, `derived`
+
+Whether to generate the project name and root directory as provided (`as-provided`) or generate them composing their values and taking the configured layout into account (`derived`).
+
+#### rootProject (**hidden**)
+
+Default: `false`
+
+Type: `boolean`
+
+Create node application at the root of the workspace
 
 #### tags
 
