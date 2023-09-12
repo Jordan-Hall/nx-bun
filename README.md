@@ -1,5 +1,8 @@
 # @nx-bun
 
+## Documentation
+https://jordan-hall.github.io/nx-bun/
+
 ## Contributing
 
 PRs, ideas and discussions accepted. Take a look at [the contributing file](CONTRIBUTING.md)!
