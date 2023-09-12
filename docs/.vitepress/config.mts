@@ -26,7 +26,7 @@ export default defineConfig({
 function nav() {
   return [
     { text: 'Guide', link: '/guide/' },
-    { text: 'Docs', link: '/docs/nx-bun/overview' },
+    { text: 'Docs', link: '/docs/repo/overview' },
     {
       text: 'Links',
       items: [
@@ -83,19 +83,19 @@ function sideNavDocs() {
           items: [
             {
               text: 'Overview',
-              link: '/docs/bun/overview',
+              link: '/docs/nx-bun/overview',
             },
             {
               text: 'Installation',
-              link: '/docs/bun/installation',
+              link: '/docs/nx-bun/installation',
             },
             {
               text: 'Generators',
-              link: '/docs/bun/generators',
+              link: '/docs/nx-bun/generators',
             },
             {
               text: 'Executors',
-              link: '/docs/bun/executors',
+              link: '/docs/nx-bun/executors',
             },
           ],
         },
@@ -107,7 +107,7 @@ function sideNavDocs() {
       collapsed: true,
       items: [
         {
-          text: 'Task Runner (Workers)',
+          text: 'How to',
           items: [
             {
               text: 'Overview',

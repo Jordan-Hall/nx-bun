@@ -10,7 +10,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /docs/nx-bun/overview
+      link: /docs/repo/overview
     - theme: alt
       text: View on GitHub
       link: https://github.com/jordan-hall/nx-bun

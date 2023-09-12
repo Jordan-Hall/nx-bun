@@ -6,5 +6,5 @@ technologies. [nx-bun](https://github.com/jordan-hall/nx-bun) is a collection of
 
 | Package                                                | Description                                                                                              |
 | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| [`@nx-bun/nx`](../bun/overview)                | An Nx plugin for development of [Bun](https://bun.sh/) applications and libraries.          |
+| [`@nx-bun/nx`](../nx-bun/overview)                | An Nx plugin for development of [Bun](https://bun.sh/) applications and libraries.          |
 | [`@nx-bun/task-worker-runner`](../task-worker-runner/overview)                  | A new task runner using workers rather than child-process                 |
