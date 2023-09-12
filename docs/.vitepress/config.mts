@@ -60,21 +60,21 @@ function sideNavGuide() {
 function sideNavDocs() {
   return [
     {
-      text: 'NX Bun',
+      text: 'The Repo',
       collapsible: true,
       items: [
         {
           text: 'Overview',
-          link: '/docs/nx-bun/overview',
+          link: '/docs/repo/overview',
         },
         {
           text: 'Contributing',
-          link: '/docs/nx-bun/contributing',
+          link: '/docs/repo/contributing',
         },
       ],
     },
     {
-      text: 'Bun',
+      text: 'nx bun',
       collapsible: true,
       collapsed: true,
       items: [
