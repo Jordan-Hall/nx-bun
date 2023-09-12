@@ -5,7 +5,6 @@ export default defineConfig({
   title: 'NX Bun',
   description: 'Bringing both NX and Bun together',
   outDir: '../dist/docs',
-  base: '/repo/',
 
   themeConfig: {
     siteTitle: 'NX Bun',
