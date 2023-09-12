@@ -13,10 +13,11 @@ describe('Bun App Generator', () => {
 		it('should make a bun app', async () => {
       await appGenerator(tree, {
         name: 'my-app',
+        applicationType: 'api'
       });
 			expect(readJson(tree, getRootTsConfigPathInTree(tree))?.compilerOptions?.types).toContain('bun-types')
       expect(readProjectConfiguration(tree, 'my-app')).toMatchSnapshot();
-      expect(tree.exists('src/index.ts')).toBeTruthy();
+      expect(tree.exists('my-app/src/main.ts')).toBeTruthy();
     });
 	});
 
@@ -28,11 +29,12 @@ describe('Bun App Generator', () => {
     it('should make an integrated bun app', async () => {
       await appGenerator(tree, {
         name: 'my-app',
+        applicationType:'none'  
       });
 			
       expect(readJson(tree, getRootTsConfigPathInTree(tree))?.compilerOptions?.types).toContain('bun-types')
       expect(readProjectConfiguration(tree, 'my-app')).toMatchSnapshot();
-      expect(tree.exists('apps/my-app/src/index.ts')).toBeTruthy();
+      expect(tree.exists('apps/my-app/src/main.ts')).toBeTruthy();
     });
 	})
 })

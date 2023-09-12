@@ -64,6 +64,7 @@ describe('nx-bun', () => {
         'error'
       );
     });
+  });
 });
 
 

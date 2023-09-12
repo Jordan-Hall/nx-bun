@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Bun App Generator General creation should make a bun app 1`] = `
+{
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "name": "my-app",
+  "projectType": "application",
+  "root": "my-app",
+  "sourceRoot": "my-app/src",
+  "targets": {
+    "build": {
+      "executor": "@nx-bun/nx:build",
+      "options": {
+        "bun": true,
+        "entrypoints": [
+          "my-app/src/main.ts",
+        ],
+        "outputPath": "dist/my-app",
+        "smol": false,
+        "tsconfig": "my-app/tsconfig.app.json",
+      },
+      "outputs": [
+        "{options.outputPath}",
+      ],
+    },
+    "serve": {
+      "defaultConfiguration": "development",
+      "executor": "@nx-bun/nx:run",
+      "options": {
+        "buildTarget": "my-app:build",
+        "bun": true,
+        "hot": true,
+        "smol": false,
+        "tsconfig": "my-app/tsconfig.app.json",
+        "watch": true,
+      },
+    },
+    "test": {
+      "executor": "@nx-bun/nx:test",
+      "options": {
+        "bail": true,
+        "bun": true,
+        "smol": false,
+        "tsconfig": "my-app/tsconfig.json",
+      },
+    },
+  },
+}
+`;
+
+exports[`Bun App Generator integrated should make an integrated bun app 1`] = `
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "my-app",
+  "projectType": "application",
+  "root": "apps/my-app",
+  "sourceRoot": "apps/my-app/src",
+  "targets": {
+    "build": {
+      "executor": "@nx-bun/nx:build",
+      "options": {
+        "bun": true,
+        "entrypoints": [
+          "apps/my-app/src/main.ts",
+        ],
+        "outputPath": "dist/my-app",
+        "smol": false,
+        "tsconfig": "apps/my-app/tsconfig.app.json",
+      },
+      "outputs": [
+        "{options.outputPath}",
+      ],
+    },
+    "serve": {
+      "defaultConfiguration": "development",
+      "executor": "@nx-bun/nx:run",
+      "options": {
+        "buildTarget": "my-app:build",
+        "bun": true,
+        "hot": true,
+        "smol": false,
+        "tsconfig": "apps/my-app/tsconfig.app.json",
+        "watch": true,
+      },
+    },
+    "test": {
+      "executor": "@nx-bun/nx:test",
+      "options": {
+        "bail": true,
+        "bun": true,
+        "smol": false,
+        "tsconfig": "apps/my-app/tsconfig.json",
+      },
+    },
+  },
+}
+`;

@@ -12,6 +12,7 @@
     "module": "esnext",
     "lib": ["esnext", "dom"],
     "skipLibCheck": true,
+    "types": ["bun-types"],
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {

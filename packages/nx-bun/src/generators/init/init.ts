@@ -56,8 +56,8 @@ export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
   const rootTsConfig = getRootTsConfigPathInTree(tree);
   updateJson(tree, rootTsConfig, (json) => {
     if (json.compilerOptions.types && !json.compilerOptions.types.includes('bun-types')) {
-      json?.compilerOptions?.types.push('bun-types')
-    } else {
+      json.compilerOptions.types.push('bun-types')
+    } else if (!json.compilerOptions.types) {
       json.compilerOptions.types = ['bun-types'] 
     }
     return json;
