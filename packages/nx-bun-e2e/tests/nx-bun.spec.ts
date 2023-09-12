@@ -40,7 +40,7 @@ describe('nx-bun', () => {
     it('should build application', async () => {
       const plugin = uniq('bun');
       await runNxCommandAsync(
-        `generate @nx-bun/app:app ${plugin} --e2eTestRunner='none' --junitTestRunner='none'`
+        `generate @nx-bun/nx:application ${plugin} -projectNameAndRootFormat=as-provided --no-interactive`
       );
 
       const result = await runNxCommandAsync(`serve ${plugin}`);
@@ -53,7 +53,7 @@ describe('nx-bun', () => {
     it('should build application', async () => {
       const plugin = uniq('bun');
       await runNxCommandAsync(
-        `generate @nx-bun/app:app ${plugin} --e2eTestRunner='none' --junitTestRunner='none'`
+        `generate @nx-bun/nx:application ${plugin} -projectNameAndRootFormat=as-provided --no-interactive`
       );
 
       const result = await runNxCommandAsync(`build ${plugin}`);
