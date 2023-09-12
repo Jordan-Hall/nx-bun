@@ -1,6 +1,7 @@
 {
   "name": "@nx-bun/nx",
   "version": "0.0.4",
+  "license": "IDGAF-1.0",
   "dependencies": {
     "@nx/devkit": "16.6.0",
     "tslib": "^2.3.0"
