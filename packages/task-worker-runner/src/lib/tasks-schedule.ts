@@ -18,7 +18,7 @@ export interface Batch {
 }
 
 export class TasksSchedule {
-  private notScheduledTaskGraph:TaskGraph;
+  private notScheduledTaskGraph: TaskGraph;
   private reverseTaskDeps: Record<string, string[]>;
   private reverseProjectGraph: ProjectGraph;
   private scheduledBatches: Batch[] = [];
@@ -77,10 +77,10 @@ export class TasksSchedule {
   }
 
   private async scheduleTasks() {
-    if (process.env.NX_BATCH_MODE === 'true') {
+    if (process.env['NX_BATCH_MODE'] === 'true') {
       await this.scheduleBatches();
     }
-    for (let root of this.notScheduledTaskGraph.roots) {
+    for (const root of this.notScheduledTaskGraph.roots) {
       if (this.canBeScheduled(root)) {
         await this.scheduleTask(root);
       }

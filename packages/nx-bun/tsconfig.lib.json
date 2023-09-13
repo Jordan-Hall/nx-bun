@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "declaration": true,
-    "types": ["node","bun-types"]
+    "types": ["node", "bun-types"]
   },
   "include": ["src/**/*.ts", "src/generators/lib/files/src/index.ts.template"],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]

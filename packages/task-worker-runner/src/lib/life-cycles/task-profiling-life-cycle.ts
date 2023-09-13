@@ -25,7 +25,7 @@ export class TaskProfilingLifeCycle implements LifeCycle {
     if (this.profileFile && !this.registeredGroups.has(groupId)) {
       this.registerGroup(groupId);
     }
-    for (let t of tasks) {
+    for (const t of tasks) {
       this.timings[t.id] = {
         perfStart: performance.now(),
       };
@@ -36,7 +36,7 @@ export class TaskProfilingLifeCycle implements LifeCycle {
     taskResults: Array<{ task: Task; status: TaskStatus; code: number }>,
     metadata: TaskMetadata
   ): void {
-    for (let tr of taskResults) {
+    for (const tr of taskResults) {
       if (tr.task.startTime) {
         this.timings[tr.task.id].perfStart = tr.task.startTime;
       }

@@ -15,7 +15,6 @@ type PublishableLib = BaseLib & {
   importPath: string;
 };
 
-
 type RegularLib = BaseLib & {
   publishable?: false;
   importPath?: string;
@@ -26,4 +25,4 @@ export type LibUnderhood = BaseLib & {
   importPath?: string;
 };
 
-export type LibGeneratorSchema = PublishableLib  | RegularLib;
+export type LibGeneratorSchema = PublishableLib | RegularLib;

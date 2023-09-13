@@ -1,10 +1,10 @@
 {
-    "extends": "<%= offsetFromRoot %><%= baseTsConfig %>",
-    "files": [],
-    "include": [],
-    "references": [
-      {
-        "path": "./tsconfig.app.json"
-      }
-    ]
-  }
+  "extends": "<%= offsetFromRoot %><%= baseTsConfig %>",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ]
+}

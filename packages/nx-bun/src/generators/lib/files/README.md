@@ -2,12 +2,9 @@
 
 This library was generated with [@nx-bun/nx](https://github.com/jordan-hall/nx-bun)
 
-
 ## Building
 
 Run `<%= cliCommand %> build <%= name %>` to build the library.
-
-
 
 ## Running unit tests
 

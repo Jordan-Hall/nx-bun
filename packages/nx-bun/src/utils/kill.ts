@@ -1,8 +1,11 @@
-import { UnifiedChildProcess, isBunSubprocess } from "./bun-cli";
+import { UnifiedChildProcess, isBunSubprocess } from './bun-cli';
 
-export type Signal = 'SIGTERM' | 'SIGINT' | 'SIGHUP' | 'SIGKILL';  // Define more signals as needed
+export type Signal = 'SIGTERM' | 'SIGINT' | 'SIGHUP' | 'SIGKILL'; // Define more signals as needed
 
-export async function killCurrentProcess(childProcess: UnifiedChildProcess, signal: Signal) {
+export async function killCurrentProcess(
+  childProcess: UnifiedChildProcess,
+  signal: Signal
+) {
   try {
     if (!childProcess.killed) {
       if (isBunSubprocess(childProcess)) {

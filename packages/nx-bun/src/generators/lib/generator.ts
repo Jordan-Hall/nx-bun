@@ -15,13 +15,12 @@ import {
   updateProjectConfiguration,
 } from '@nx/devkit';
 
-
 import * as path from 'path';
 import {
   determineProjectNameAndRootOptions,
   type ProjectNameAndRootOptions,
 } from '@nx/devkit/src/generators/project-name-and-root-utils';
-import { LibGeneratorSchema,LibUnderhood } from './schema';
+import { LibGeneratorSchema, LibUnderhood } from './schema';
 import { BundleExecutorSchema } from '../../executors/build/schema';
 import { TestExecutorSchema } from '../../executors/test/schema';
 import { getRootTsConfigPathInTree } from '@nx/js';
@@ -36,14 +35,14 @@ export interface NormalizedSchema extends LibUnderhood {
   projectRoot: ProjectNameAndRootOptions['projectRoot'];
   projectName: ProjectNameAndRootOptions['projectName'];
   parsedTags: string[];
-  importPath?: ProjectNameAndRootOptions['importPath']
-  propertyName: string
+  importPath?: ProjectNameAndRootOptions['importPath'];
+  propertyName: string;
 }
 
 export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
   const opts = await normalizeOptions(tree, options);
   const tasks: GeneratorCallback[] = [
-    await initGenerator(tree, { bunNXRuntime: false, forceBunInstall: false })
+    await initGenerator(tree, { bunNXRuntime: false, forceBunInstall: false }),
   ];
   if (opts.publishable === true && !opts.importPath) {
     throw new Error(
@@ -52,25 +51,28 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
   }
 
   ensurePackage('@nx/js', NX_VERSION);
-  const jsLibraryGenerator = await import ('@nx/js').then(m => m.libraryGenerator)
+  const jsLibraryGenerator = await import('@nx/js').then(
+    (m) => m.libraryGenerator
+  );
 
   const libraryInstall = await jsLibraryGenerator(tree, {
     ...options,
     name: options.name,
-    includeBabelRc: opts.unitTestRunner !== 'bun' && opts.unitTestRunner !== 'none',
+    includeBabelRc:
+      opts.unitTestRunner !== 'bun' && opts.unitTestRunner !== 'none',
     importPath: options.importPath,
     testEnvironment: 'node',
     skipFormat: true,
-    unitTestRunner: options.unitTestRunner === 'bun' ? 'none' : options.unitTestRunner,
+    unitTestRunner:
+      options.unitTestRunner === 'bun' ? 'none' : options.unitTestRunner,
   });
   tasks.push(libraryInstall);
 
-  const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'index.ts')]
-  
+  const entryPoints = [joinPathFragments(opts.projectRoot, 'src', 'index.ts')];
 
-  createFiles(tree, opts)
+  createFiles(tree, opts);
   if (opts.publishable) {
-    tasks.push(updateProject(tree,opts, entryPoints));
+    tasks.push(updateProject(tree, opts, entryPoints));
   }
   await formatFiles(tree);
 
@@ -81,7 +83,6 @@ async function normalizeOptions(
   tree: Tree,
   options: LibGeneratorSchema
 ): Promise<NormalizedSchema> {
-
   if (options.publishable) {
     if (!options.importPath) {
       throw new Error(
@@ -102,15 +103,14 @@ async function normalizeOptions(
     importPath: options.importPath,
     rootProject: options.rootProject,
     projectNameAndRootFormat: options.projectNameAndRootFormat,
-    callingGenerator: '@nx-bun/nx:lib'
+    callingGenerator: '@nx-bun/nx:lib',
   });
-
 
   const fileName = getCaseAwareFileName({
     fileName: options.simpleName
       ? projectNames.projectSimpleName
       : projectNames.projectFileName,
-    pascalCaseFiles: false
+    pascalCaseFiles: false,
   });
 
   const parsedTags = options.tags
@@ -139,23 +139,33 @@ function getCaseAwareFileName(options: {
   return options.pascalCaseFiles ? normalized.className : normalized.fileName;
 }
 
-
 function createFiles(tree: Tree, options: NormalizedSchema) {
   const templateOptions = {
     ...options,
     template: '',
     cliCommand: 'nx',
     offsetFromRoot: offsetFromRoot(options.projectRoot),
-    baseTsConfig: getRootTsConfigPathInTree(tree)
+    baseTsConfig: getRootTsConfigPathInTree(tree),
   };
-  generateFiles(tree, path.join(__dirname, 'files'), `${options.projectRoot}`, templateOptions);
+  generateFiles(
+    tree,
+    path.join(__dirname, 'files'),
+    `${options.projectRoot}`,
+    templateOptions
+  );
 
   if (options.unitTestRunner === 'none') {
     tree.delete(
-      joinPathFragments(options.projectRoot, `./src/lib/${options.fileName}.spec.ts`)
+      joinPathFragments(
+        options.projectRoot,
+        `./src/lib/${options.fileName}.spec.ts`
+      )
     );
   } else if (options.unitTestRunner === 'bun') {
-    const file = joinPathFragments(options.projectRoot, `./src/lib/${options.fileName}.spec.ts`)
+    const file = joinPathFragments(
+      options.projectRoot,
+      `./src/lib/${options.fileName}.spec.ts`
+    );
     const indexSource = tree.read(file, 'utf-8');
     if (indexSource !== null) {
       const indexSourceFile = createSourceFile(
@@ -172,32 +182,36 @@ function createFiles(tree: Tree, options: NormalizedSchema) {
         )
       );
       tree.write(file, changes);
+    }
+    if (!options.publishable) {
+      tree.delete(joinPathFragments(options.projectRoot, 'package.json'));
+    }
   }
-  if (!options.publishable) {
-    tree.delete(joinPathFragments(options.projectRoot, 'package.json'));
-  }}
 }
 
-
-function updateProject(tree: Tree, options: NormalizedSchema, entryPoints: string[]): GeneratorCallback {
+function updateProject(
+  tree: Tree,
+  options: NormalizedSchema,
+  entryPoints: string[]
+): GeneratorCallback {
   const project = readProjectConfiguration(tree, options.projectName);
   project.targets = project.targets || {};
   const build: TargetConfiguration<BundleExecutorSchema> = {
     executor: '@nx-bun/nx:build',
-    outputs: ["{options.outputPath}"],
+    outputs: ['{options.outputPath}'],
     options: {
       entrypoints: entryPoints,
       outputPath: joinPathFragments(
         'dist',
-        options.projectRoot ? options.name : options.projectRoot,
+        options.projectRoot ? options.name : options.projectRoot
       ),
       tsconfig: joinPathFragments(options.projectRoot, `tsconfig.lib.json`),
       smol: false,
-      bun: true
-    }
-  }
+      bun: true,
+    },
+  };
 
-  project.targets['build'] = build
+  project.targets['build'] = build;
 
   if (options.unitTestRunner === 'bun') {
     const test: TargetConfiguration<TestExecutorSchema> = {
@@ -205,13 +219,14 @@ function updateProject(tree: Tree, options: NormalizedSchema, entryPoints: strin
       options: {
         smol: false,
         bail: true,
-        bun: false
-      }
-    }
-    project.targets['test'] = test
+        bun: false,
+      },
+    };
+    project.targets['test'] = test;
   }
   updateProjectConfiguration(tree, options.projectName, project);
-  return () => {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  return () => {};
 }
 
 export default libGenerator;

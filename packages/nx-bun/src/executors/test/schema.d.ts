@@ -8,5 +8,4 @@ export interface TestExecutorSchema {
   config?: string;
   bun: boolean;
   tsconfig?: string;
-
 } // eslint-disable-line

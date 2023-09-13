@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 import { readdirSync, statSync } from 'fs';
 import { removeSync } from 'fs-extra';
 import { join } from 'path';

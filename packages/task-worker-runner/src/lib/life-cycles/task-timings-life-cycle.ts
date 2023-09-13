@@ -11,7 +11,7 @@ export class TaskTimingsLifeCycle implements LifeCycle {
   } = {};
 
   startTasks(tasks: Task[]): void {
-    for (let t of tasks) {
+    for (const t of tasks) {
       this.timings[t.id] = {
         start: new Date().getTime(),
         end: undefined,
@@ -26,7 +26,7 @@ export class TaskTimingsLifeCycle implements LifeCycle {
       code: number;
     }>
   ): void {
-    for (let tr of taskResults) {
+    for (const tr of taskResults) {
       if (tr.task.startTime) {
         this.timings[tr.task.id].start = tr.task.startTime;
       }

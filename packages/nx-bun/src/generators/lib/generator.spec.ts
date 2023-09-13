@@ -4,7 +4,6 @@ import { Tree, readJson, readProjectConfiguration } from '@nx/devkit';
 import { libGenerator } from './generator';
 import { LibGeneratorSchema } from './schema';
 import { getRootTsConfigPathInTree } from '@nx/js';
-import { rmSync } from 'fs';
 
 describe('lib generator', () => {
   let tree: Tree;
@@ -18,7 +17,8 @@ describe('lib generator', () => {
     await libGenerator(tree, options);
     const config = readProjectConfiguration(tree, 'test');
     expect(config).toBeDefined();
-    expect(readJson(tree, getRootTsConfigPathInTree(tree))?.compilerOptions?.types).toContain('bun-types')
+    expect(
+      readJson(tree, getRootTsConfigPathInTree(tree))?.compilerOptions?.types
+    ).toContain('bun-types');
   });
-  
 });

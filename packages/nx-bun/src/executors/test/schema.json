@@ -49,9 +49,9 @@
       "default": false
     },
     "tsconfig": {
-			"type": "string",
-			"description": "Load tsconfig from path instead of cwd/tsconfig.json"
-		}
+      "type": "string",
+      "description": "Load tsconfig from path instead of cwd/tsconfig.json"
+    }
   },
   "required": []
 }

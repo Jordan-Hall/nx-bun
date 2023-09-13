@@ -1,0 +1,16 @@
+{
+  "extends": ["@commitlint/config-conventional"],
+  "rules": {
+    "type-enum": [
+      2,
+      "always",
+      ["feat", "fix", "docs", "refactor", "cleanup", "chore"]
+    ],
+    "scope-enum": [
+      2,
+      "always",
+      ["nx-bun", "docs", "nx", "worker-task", "bun-task"]
+    ],
+    "header-max-length": [2, "always", 100]
+  }
+}

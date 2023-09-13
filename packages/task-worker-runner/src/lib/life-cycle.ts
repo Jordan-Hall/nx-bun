@@ -48,7 +48,7 @@ export class CompositeLifeCycle implements LifeCycle {
   constructor(private readonly lifeCycles: LifeCycle[]) {}
 
   startCommand(): void {
-    for (let l of this.lifeCycles) {
+    for (const l of this.lifeCycles) {
       if (l.startCommand) {
         l.startCommand();
       }
@@ -56,7 +56,7 @@ export class CompositeLifeCycle implements LifeCycle {
   }
 
   endCommand(): void {
-    for (let l of this.lifeCycles) {
+    for (const l of this.lifeCycles) {
       if (l.endCommand) {
         l.endCommand();
       }
@@ -64,7 +64,7 @@ export class CompositeLifeCycle implements LifeCycle {
   }
 
   scheduleTask(task: Task): void {
-    for (let l of this.lifeCycles) {
+    for (const l of this.lifeCycles) {
       if (l.scheduleTask) {
         l.scheduleTask(task);
       }
@@ -72,7 +72,7 @@ export class CompositeLifeCycle implements LifeCycle {
   }
 
   startTask(task: Task): void {
-    for (let l of this.lifeCycles) {
+    for (const l of this.lifeCycles) {
       if (l.startTask) {
         l.startTask(task);
       }
@@ -80,7 +80,7 @@ export class CompositeLifeCycle implements LifeCycle {
   }
 
   endTask(task: Task, code: number): void {
-    for (let l of this.lifeCycles) {
+    for (const l of this.lifeCycles) {
       if (l.endTask) {
         l.endTask(task, code);
       }
@@ -88,7 +88,7 @@ export class CompositeLifeCycle implements LifeCycle {
   }
 
   startTasks(tasks: Task[], metadata: TaskMetadata): void {
-    for (let l of this.lifeCycles) {
+    for (const l of this.lifeCycles) {
       if (l.startTasks) {
         l.startTasks(tasks, metadata);
       } else if (l.startTask) {
@@ -98,7 +98,7 @@ export class CompositeLifeCycle implements LifeCycle {
   }
 
   endTasks(taskResults: TaskResult[], metadata: TaskMetadata): void {
-    for (let l of this.lifeCycles) {
+    for (const l of this.lifeCycles) {
       if (l.endTasks) {
         l.endTasks(taskResults, metadata);
       } else if (l.endTask) {
@@ -112,7 +112,7 @@ export class CompositeLifeCycle implements LifeCycle {
     status: TaskStatus,
     output: string
   ): void {
-    for (let l of this.lifeCycles) {
+    for (const l of this.lifeCycles) {
       if (l.printTaskTerminalOutput) {
         l.printTaskTerminalOutput(task, status, output);
       }

@@ -22,7 +22,6 @@ import { getRootTsConfigPathInTree } from '@nx/js';
 import { RunExecutorSchema } from '../../executors/run/schema';
 import initGenerator from '../init/init';
 
-
 export interface NormalizedSchema extends AppGeneratorSchema {
   name: string;
   projectNames: ProjectNameAndRootOptions['names'];
@@ -30,48 +29,48 @@ export interface NormalizedSchema extends AppGeneratorSchema {
   projectRoot: ProjectNameAndRootOptions['projectRoot'];
   projectName: ProjectNameAndRootOptions['projectName'];
   parsedTags: string[];
-  importPath?: ProjectNameAndRootOptions['importPath']
-  propertyName: string
+  importPath?: ProjectNameAndRootOptions['importPath'];
+  propertyName: string;
 }
 
 type AppStructure = {
   genFiles: () => void;
   packageInstall: () => void;
 };
-type ApplicationGeneration =  Partial<Record<AppTypes, AppStructure>>;
+type ApplicationGeneration = Partial<Record<AppTypes, AppStructure>>;
 export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
   const opts = await normalizeOptions(tree, options);
 
-  await initGenerator(tree, {bunNXRuntime: false, forceBunInstall: false})
+  await initGenerator(tree, { bunNXRuntime: false, forceBunInstall: false });
 
-  const entryPoints =  [joinPathFragments(opts.projectRoot, 'src', 'main.ts')]
+  const entryPoints = [joinPathFragments(opts.projectRoot, 'src', 'main.ts')];
 
   const build: TargetConfiguration<BundleExecutorSchema> = {
     executor: '@nx-bun/nx:build',
-    outputs: ["{options.outputPath}"],
+    outputs: ['{options.outputPath}'],
     options: {
       entrypoints: entryPoints,
       outputPath: joinPathFragments(
         'dist',
-        opts.projectRoot ? opts.name : opts.projectRoot,
+        opts.projectRoot ? opts.name : opts.projectRoot
       ),
       tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
       smol: false,
-      bun: true
-    }
+      bun: true,
+    },
   };
 
   const serve: TargetConfiguration<RunExecutorSchema> = {
     executor: '@nx-bun/nx:run',
-    defaultConfiguration: "development",
+    defaultConfiguration: 'development',
     options: {
       buildTarget: `${opts.projectName}:build`,
       tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
       watch: true,
       hot: true,
       bun: true,
-      smol: false
-    }
+      smol: false,
+    },
   };
 
   const test: TargetConfiguration<TestExecutorSchema> = {
@@ -80,10 +79,9 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
       smol: false,
       bail: true,
       tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.json'),
-      bun: true
-    }
-  }
-
+      bun: true,
+    },
+  };
 
   addProjectConfiguration(tree, opts.projectName, {
     root: opts.projectRoot,
@@ -92,12 +90,11 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     targets: {
       build,
       serve,
-      test
+      test,
     },
   });
 
-  createFiles(tree, opts)
-  
+  createFiles(tree, opts);
 
   await formatFiles(tree);
 }
@@ -106,7 +103,6 @@ async function normalizeOptions(
   tree: Tree,
   options: AppGeneratorSchema
 ): Promise<NormalizedSchema> {
-
   const {
     projectName,
     names: projectNames,
@@ -118,13 +114,12 @@ async function normalizeOptions(
     directory: options.directory,
     projectNameAndRootFormat: options.projectNameAndRootFormat,
     rootProject: options.rootProject,
-    callingGenerator: '@nx-bun/nx:application'
+    callingGenerator: '@nx-bun/nx:application',
   });
-
 
   const fileName = getCaseAwareFileName({
     fileName: projectNames.projectFileName,
-    pascalCaseFiles: false
+    pascalCaseFiles: false,
   });
 
   const parsedTags = options.tags
@@ -153,36 +148,42 @@ function getCaseAwareFileName(options: {
   return options.pascalCaseFiles ? normalized.className : normalized.fileName;
 }
 
-
 function createFiles(tree: Tree, opts: NormalizedSchema) {
-
   const templateOptions = {
     ...opts,
     template: '',
     cliCommand: 'nx',
     offsetFromRoot: offsetFromRoot(opts.projectRoot),
-    baseTsConfig: getRootTsConfigPathInTree(tree)
+    baseTsConfig: getRootTsConfigPathInTree(tree),
   };
 
-  generateFiles(tree, path.join(__dirname, 'files/common'), `${opts.projectRoot}`, templateOptions);
+  generateFiles(
+    tree,
+    path.join(__dirname, 'files/common'),
+    `${opts.projectRoot}`,
+    templateOptions
+  );
 
   const applicationType: ApplicationGeneration = {
-    'api': {
+    api: {
       genFiles: () => {
         tree.delete(joinPathFragments(opts.projectRoot, 'src', 'main.ts'));
         tree.delete(joinPathFragments(opts.projectRoot, 'src', 'main.spec.ts'));
-        generateFiles(tree, path.join(__dirname, 'files/api'), `${opts.projectRoot}`, templateOptions);
+        generateFiles(
+          tree,
+          path.join(__dirname, 'files/api'),
+          `${opts.projectRoot}`,
+          templateOptions
+        );
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      packageInstall: () => {}
+      packageInstall: () => {},
     },
-  }
+  };
 
   const genAppDetails = applicationType[opts.applicationType];
   genAppDetails?.genFiles();
   genAppDetails?.packageInstall();
-  
 }
 
 export default appGenerator;
-

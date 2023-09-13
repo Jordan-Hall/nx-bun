@@ -232,7 +232,7 @@ export async function createRunOneDynamicOutputRenderer({
   };
 
   lifeCycle.endTasks = (taskResults) => {
-    for (let t of taskResults) {
+    for (const t of taskResults) {
       totalCompletedTasks++;
 
       switch (t.status) {

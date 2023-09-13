@@ -13,7 +13,10 @@ import { createRunManyDynamicOutputRenderer } from './life-cycles/dynamic-run-ma
 import { TaskProfilingLifeCycle } from './life-cycles/task-profiling-life-cycle';
 import { isCI } from 'nx/src/utils/is-ci';
 import { createRunOneDynamicOutputRenderer } from './life-cycles/dynamic-run-one-terminal-output-life-cycle';
-import { ProjectGraph, ProjectGraphProjectNode } from 'nx/src/config/project-graph';
+import {
+  ProjectGraph,
+  ProjectGraphProjectNode,
+} from 'nx/src/config/project-graph';
 import {
   NxJsonConfiguration,
   TargetDefaults,
@@ -420,6 +423,7 @@ export function getRunner(
         tasksRunner = tasksRunner.default;
       }
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       tasksRunner = require('./default-tasks-runner').defaultTasksRunner;
     }
 

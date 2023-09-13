@@ -16,7 +16,7 @@ import {
 import { readNxJson } from 'nx/src/config/configuration';
 import { isAsyncIterator } from 'nx/src/utils/async-iterator';
 import { getExecutorInformation } from 'nx/src/command-line/run/executor-utils';
-import { parentPort, workerData, } from 'worker_threads';
+import { parentPort, workerData } from 'worker_threads';
 
 function getBatchExecutor(executorName: string) {
   const [nodeModule, exportName] = executorName.split(':');
@@ -88,6 +88,7 @@ async function runTasks(
         } else {
           break;
         }
+        // eslint-disable-next-line no-constant-condition
       } while (true);
 
       return batchResults;
@@ -103,7 +104,7 @@ async function runTasks(
 
 if (parentPort) {
   if (workerData) {
-    process.env = {...process.env, ...workerData}
+    process.env = { ...process.env, ...workerData };
   }
   parentPort.on('message', async (message: BatchMessage) => {
     switch (message.type) {

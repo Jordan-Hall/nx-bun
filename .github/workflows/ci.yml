@@ -1,0 +1,109 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+env:
+  NX_CLOUD_DISTRIBUTED_EXECUTION: true # this enables DTE
+  NX_CLOUD_DISTRIBUTED_EXECUTION_AGENT_COUNT: 3 # expected number of agents
+  NX_BRANCH: ${{ github.event.number || github.ref_name }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # this is needed if our pipeline publishes to npm
+
+jobs:
+  main:
+    name: Nx Cloud - Main Job
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout [Pull Request]
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - uses: actions/checkout@v4
+        name: Checkout [Default Branch]
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          fetch-depth: 0
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Use the package manager cache if available
+        uses: actions/cache@v3
+        with:
+          path: ~/.bun
+          key: ${{ runner.os }}-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Initialize the Nx Cloud distributed CI run
+        run: bunx nx-cloud start-ci-run
+
+      - name: Run commands in parallel
+        run: |
+          pids=()
+          # list of commands to be run on main has env flag NX_CLOUD_DISTRIBUTED_EXECUTION set to false
+          NX_CLOUD_DISTRIBUTED_EXECUTION=false bunx nx-cloud record -- bunx nx format:check & pids+=($!)
+
+          # list of commands to be run on agents
+          bunx nx affected --target=lint --parallel=3 --exclude='*example*,*task-worker-runner*' & pids+=($!)
+
+          bunx nx affected --target=test --parallel=3 --ci --code-coverage --exclude='*example*,*task-worker-runner*' & pids+=($!)
+
+          bunx nx affected --target=build --parallel=3 --exclude='*example*' & pids+=($!)
+
+          bunx nx affected --target=e2e --parallel=3 --ci --exclude='*example*' & pids+=($!)
+
+          # run all commands in parallel and bail if one of them fails
+          for pid in ${pids[*]}; do
+            if ! wait $pid; then
+              exit 1
+            fi
+          done
+
+          exit 0
+
+      - name: Stop all running agents for this CI run
+        # It's important that we always run this step, otherwise in the case of any failures in preceding non-Nx steps, the agents will keep running and waste billable minutes
+        if: ${{ always() }}
+        run: bunx nx-cloud stop-all-agents
+
+  agents:
+    name: Agent ${{ matrix.agent }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        agent: [1, 2, 3]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Use the package manager cache if available
+        uses: actions/cache@v3
+        with:
+          path: ~/.bun
+          key: ${{ runner.os }}-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Start Nx Agent ${{ matrix.agent }}
+        run: bunx nx-cloud start-agent
+        env:
+          NX_AGENT_NAME: ${{ matrix.agent }}

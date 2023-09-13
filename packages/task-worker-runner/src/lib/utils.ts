@@ -1,7 +1,10 @@
 import { output } from 'nx/src/utils/output';
 import { relative } from 'path';
 import { Task, TaskGraph } from 'nx/src/config/task-graph';
-import { ProjectGraph, ProjectGraphProjectNode } from 'nx/src/config/project-graph';
+import {
+  ProjectGraph,
+  ProjectGraphProjectNode,
+} from 'nx/src/config/project-graph';
 import { TargetDependencyConfig } from 'nx/src/config/workspace-json-project-json';
 import { workspaceRoot } from 'nx/src/utils/workspace-root';
 import { joinPathFragments } from 'nx/src/utils/path';
@@ -220,7 +223,7 @@ export function interpolate(template: string, data: any): string {
 
   return res.replace(/{([\s\S]+?)}/g, (match: string) => {
     let value = data;
-    let path = match.slice(1, -1).trim().split('.');
+    const path = match.slice(1, -1).trim().split('.');
     for (let idx = 0; idx < path.length; idx++) {
       if (!value[path[idx]]) {
         return match;
@@ -264,7 +267,7 @@ export function removeTasksFromTaskGraph(
   const tasks = {};
   const dependencies = {};
   const removedSet = new Set(ids);
-  for (let taskId of Object.keys(graph.tasks)) {
+  for (const taskId of Object.keys(graph.tasks)) {
     if (!removedSet.has(taskId)) {
       tasks[taskId] = graph.tasks[taskId];
       dependencies[taskId] = graph.dependencies[taskId].filter(
@@ -329,12 +332,13 @@ export function getSerializedArgsForTask(task: Task, isVerbose: boolean) {
 export function shouldStreamOutput(
   task: Task,
   initiatingProject: string | null,
-  options: {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _options: {
     cacheableOperations?: string[] | null;
     cacheableTargets?: string[] | null;
   }
 ): boolean {
-  if (process.env.NX_STREAM_OUTPUT === 'true') return true;
+  if (process.env['NX_STREAM_OUTPUT'] === 'true') return true;
   if (longRunningTask(task)) return true;
   if (task.target.project === initiatingProject) return true;
   return false;
@@ -368,6 +372,6 @@ function longRunningTask(task: Task) {
 }
 
 // TODO: vsavkin remove when nx-cloud doesn't depend on it
-export function unparse(options: Object): string[] {
+export function unparse(options: NonNullable<unknown>): string[] {
   return serializeOverridesIntoCommandLine(options);
 }

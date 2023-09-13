@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { config as loadDotEnvFile } from 'dotenv';
-import { fork, Serializable } from 'child_process';
+import { DotenvPopulateInput, config as loadDotEnvFile } from 'dotenv';
+import { Serializable } from 'child_process';
 import * as chalk from 'chalk';
 import * as logTransformer from 'strong-log-transformer';
 import { workspaceRoot } from 'nx/src/utils/workspace-root';
@@ -8,7 +8,6 @@ import { DefaultTasksRunnerOptions } from './default-tasks-runner';
 import { output } from 'nx/src/utils/output';
 import { getCliPath, getPrintableCommandArgsForTask } from './utils';
 import { Batch } from './tasks-schedule';
-import { join } from 'path';
 import {
   BatchMessage,
   BatchMessageType,
@@ -18,8 +17,8 @@ import { stripIndents } from 'nx/src/utils/strip-indents';
 import { Task, TaskGraph } from 'nx/src/config/task-graph';
 import { Transform } from 'stream';
 import { Worker } from 'worker_threads';
-const workerPath = require.resolve('./batch/run-batch')
-const runExecutor = require.resolve('./run-executor')
+const workerPath = require.resolve('./batch/run-batch');
+const runExecutor = require.resolve('./run-executor');
 
 export class ForkedProcessTaskRunner {
   workspaceRoot = workspaceRoot;
@@ -55,12 +54,12 @@ export class ForkedProcessTaskRunner {
         }
 
         const p = new Worker(workerPath, {
-          workerData: this.getEnvVariablesForProcess() // <-- Pass environment variables using workerData
+          workerData: this.getEnvVariablesForProcess(), // <-- Pass environment variables using workerData
         });
 
         this.processes.add(p);
 
-        p.once('exit', (code, signal) => {
+        p.once('exit', (code: number | null, signal: string) => {
           this.processes.delete(p);
           if (code === null) code = this.signalToCode(signal);
           if (code !== 0) {
@@ -79,6 +78,7 @@ export class ForkedProcessTaskRunner {
           }
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         p.on('message', (message: BatchMessage | any) => {
           switch (message.type) {
             case BatchMessageType.CompleteBatchExecution: {
@@ -90,11 +90,11 @@ export class ForkedProcessTaskRunner {
             }
             default: {
               if (['stdin', 'stdout', 'stderr'].includes(message?.type)) {
-                console.log(message?.message)
+                console.log(message?.message);
               } else if (process.send) {
                 process.send(message);
               } else {
-                p.postMessage(message)
+                p.postMessage(message);
               }
             }
           }
@@ -136,13 +136,12 @@ export class ForkedProcessTaskRunner {
         const p = new Worker(runExecutor, {
           workerData: this.getEnvVariablesForTask(
             task,
-            process.env.FORCE_COLOR === undefined
+            process.env['FORCE_COLOR'] === undefined
               ? 'true'
-              : process.env.FORCE_COLOR,
+              : process.env['FORCE_COLOR'],
             null,
             null
           ),
-
         });
 
         this.processes.add(p);
@@ -150,9 +149,9 @@ export class ForkedProcessTaskRunner {
         // Re-emit any messages from the task process
         p.on('message', (message) => {
           if (['stdin', 'stdout', 'stderr'].includes(message?.type)) {
-            console.log(message.message)
+            console.log(message.message);
           } else {
-            p.postMessage(message)
+            p.postMessage(message);
           }
         });
         // Send message to run the executor
@@ -177,11 +176,10 @@ export class ForkedProcessTaskRunner {
             }
             if (p.stderr) {
               p.stderr
-              .pipe(logClearLineToPrefixTransformer(color(prefixText) + ' '))
-              .pipe(logTransformer({ tag: color(prefixText) }))
-              .pipe(process.stderr);
+                .pipe(logClearLineToPrefixTransformer(color(prefixText) + ' '))
+                .pipe(logTransformer({ tag: color(prefixText) }))
+                .pipe(process.stderr);
             }
-
           } else {
             if (p.stdout) {
               p.stdout.pipe(logTransformer()).pipe(process.stdout);
@@ -192,7 +190,7 @@ export class ForkedProcessTaskRunner {
           }
         }
 
-        let outWithErr = [];
+        const outWithErr: unknown[] = [];
         if (p.stdout) {
           p.stdout.on('data', (chunk) => {
             outWithErr.push(chunk.toString());
@@ -204,14 +202,14 @@ export class ForkedProcessTaskRunner {
           });
         }
 
-        p.on('exit', (code, signal) => {
+        p.on('exit', (code: number | null, signal: string) => {
           this.processes.delete(p);
           if (code === null) code = this.signalToCode(signal);
           // we didn't print any output as we were running the command
           // print all the collected output|
           const terminalOutput = outWithErr.join('');
 
-          if (!streamOutput) {
+          if (!streamOutput && this.options.lifeCycle.printTaskTerminalOutput) {
             this.options.lifeCycle.printTaskTerminalOutput(
               task,
               code === 0 ? 'success' : 'failure',
@@ -254,18 +252,18 @@ export class ForkedProcessTaskRunner {
             undefined,
             temporaryOutputPath,
             streamOutput
-          )
+          ),
         });
         this.processes.add(p);
 
         // Re-emit any messages from the task process
         p.on('message', (message) => {
           if (['stdin', 'stdout', 'stderr'].includes(message?.type)) {
-            console.log(message.message)
+            console.log(message.message);
           } else if (process.send) {
             process.send(message);
           } else {
-            p.postMessage(message)
+            p.postMessage(message);
           }
         });
         // Send message to run the executor
@@ -276,14 +274,17 @@ export class ForkedProcessTaskRunner {
           isVerbose: this.verbose,
         });
 
-        p.on('exit', (code, signal) => {
+        p.on('exit', (code: number | null, signal: string) => {
           if (code === null) code = this.signalToCode(signal);
           // we didn't print any output as we were running the command
           // print all the collected output
           let terminalOutput = '';
           try {
             terminalOutput = this.readTerminalOutput(temporaryOutputPath);
-            if (!streamOutput) {
+            if (
+              !streamOutput &&
+              this.options.lifeCycle.printTaskTerminalOutput
+            ) {
               this.options.lifeCycle.printTaskTerminalOutput(
                 task,
                 code === 0 ? 'success' : 'failure',
@@ -477,8 +478,11 @@ export class ForkedProcessTaskRunner {
 
   private unloadDotEnvFiles(environmentVariables: NodeJS.ProcessEnv) {
     const unloadDotEnvFile = (filename: string) => {
-      let parsedDotEnvFile: NodeJS.ProcessEnv = {};
-      loadDotEnvFile({ path: filename, processEnv: parsedDotEnvFile });
+      const parsedDotEnvFile: NodeJS.ProcessEnv = {};
+      loadDotEnvFile({
+        path: filename,
+        processEnv: parsedDotEnvFile as DotenvPopulateInput,
+      });
       Object.keys(parsedDotEnvFile).forEach((envVarKey) => {
         if (environmentVariables[envVarKey] === parsedDotEnvFile[envVarKey]) {
           delete environmentVariables[envVarKey];
@@ -561,12 +565,13 @@ function getColor(projectName: string) {
 /**
  * Prevents terminal escape sequence from clearing line prefix.
  */
-function logClearLineToPrefixTransformer(prefix) {
-  let prevChunk = null;
+function logClearLineToPrefixTransformer(prefix: string) {
+  let prevChunk: { toString: () => string } | null = null;
   return new Transform({
     transform(chunk, _encoding, callback) {
       if (prevChunk && prevChunk.toString() === '\x1b[2K') {
-        chunk = chunk.toString().replace(/\x1b\[1G/g, (m) => m + prefix);
+        // eslint-disable-next-line no-control-regex
+        chunk = chunk.toString().replace(/\x1b\[1G/g, (m: any) => m + prefix);
       }
       this.push(chunk);
       prevChunk = chunk;

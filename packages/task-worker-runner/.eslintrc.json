@@ -18,7 +18,16 @@
       "files": ["*.json"],
       "parser": "jsonc-eslint-parser",
       "rules": {
-        "@nx/dependency-checks": "error"
+        "@nx/dependency-checks": [
+          "error",
+          {
+            "buildTargets": ["build"], // add non standard build target names
+            "ignoredDependencies": ["@swc/helpers"], // these libs will be omitted from checks
+            "checkMissingDependencies": true, // toggle to disable
+            "checkObsoleteDependencies": true, // toggle to disable
+            "checkVersionMismatches": true // toggle to disable
+          }
+        ]
       }
     }
   ]

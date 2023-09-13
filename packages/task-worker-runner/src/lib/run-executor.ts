@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { appendFileSync, openSync, writeFileSync } from 'fs';
 import { Target, run } from 'nx/src/command-line/run/run';
 import { TaskGraph } from 'nx/src/config/task-graph';
-import { parentPort, workerData, } from 'worker_threads';
+import { parentPort, workerData } from 'worker_threads';
 
 if (workerData?.NX_TERMINAL_OUTPUT_PATH) {
   setUpOutputWatching(
@@ -50,8 +51,8 @@ function setUpOutputWatching(captureStderr: boolean, streamOutput: boolean) {
       if (parentPort) {
         parentPort.postMessage({
           type: 'stdout',
-          message: chunk.toString()
-        })
+          message: chunk.toString(),
+        });
       }
     } else {
       callback();
@@ -71,8 +72,8 @@ function setUpOutputWatching(captureStderr: boolean, streamOutput: boolean) {
       if (parentPort) {
         parentPort.postMessage({
           type: 'stderr',
-          message: chunk.toString()
-        })
+          message: chunk.toString(),
+        });
       }
     } else {
       callback();
@@ -113,4 +114,3 @@ if (parentPort) {
     }
   );
 }
-

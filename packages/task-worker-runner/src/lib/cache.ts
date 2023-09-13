@@ -51,7 +51,7 @@ export class Cache {
       try {
         this._currentMachineId = await machineId();
       } catch (e) {
-        if (process.env.NX_VERBOSE_LOGGING == 'true') {
+        if (process.env['NX_VERBOSE_LOGGING'] == 'true') {
           console.log(`Unable to get machineId. Error: ${e.message}`);
         }
         this._currentMachineId = '';
@@ -170,18 +170,18 @@ export class Cache {
     outputs: string[],
     cwd: string
   ): Promise<string[]> {
-    const { expandOutputs } = require('nx/src/native');
+    const { expandOutputs } = await import('nx/src/native');
     const results = expandOutputs(cwd, outputs);
 
     return results;
   }
 
   private async copy(src: string, destination: string): Promise<void> {
-    const { copy } = require('nx/src/native');
+    const { copy } = await import('nx/src/native');
     // 'cp -a /path/dir/ dest/' operates differently to 'cp -a /path/dir dest/'
     // --> which means actual build works but subsequent populate from cache (using cp -a) does not
     // --> the fix is to remove trailing slashes to ensure consistent & expected behaviour
-    src = src.replace(/[\/\\]$/, '');
+    src = src.replace(/[/\\]$/, '');
 
     return new Promise((res, rej) => {
       try {
@@ -194,7 +194,7 @@ export class Cache {
   }
 
   private async remove(path: string): Promise<void> {
-    const { remove } = require('nx/src/native/native');
+    const { remove } = await import('nx/src/native/native');
     return new Promise((res, rej) => {
       try {
         remove(path);
@@ -217,11 +217,13 @@ export class Cache {
       let code = 0;
       try {
         code = Number(await readFile(join(td, 'code'), 'utf-8'));
+        // eslint-disable-next-line no-empty
       } catch {}
 
       let sourceMachineId = null;
       try {
         sourceMachineId = await readFile(join(td, 'source'), 'utf-8');
+        // eslint-disable-next-line no-empty
       } catch {}
 
       if (
@@ -229,8 +231,8 @@ export class Cache {
         sourceMachineId != (await this.currentMachineId())
       ) {
         if (
-          process.env.NX_REJECT_UNKNOWN_LOCAL_CACHE != '0' &&
-          process.env.NX_REJECT_UNKNOWN_LOCAL_CACHE != 'false'
+          process.env?.['NX_REJECT_UNKNOWN_LOCAL_CACHE'] != '0' &&
+          process.env?.['NX_REJECT_UNKNOWN_LOCAL_CACHE'] != 'false'
         ) {
           const error = [
             `Invalid Cache Directory for Task "${task.id}"`,
