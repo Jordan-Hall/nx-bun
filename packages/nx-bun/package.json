@@ -3,9 +3,9 @@
   "version": "0.0.4",
   "license": "IDGAF-1.0",
   "dependencies": {
-    "@nx/devkit": "16.8.1",
     "tslib": "^2.3.0"
   },
+  "peerDependencies": {},
   "repository": {
     "url": "https://github.com/Jordan-Hall/nx-bun/tree/master/packages/nx-bun",
     "type": "git"

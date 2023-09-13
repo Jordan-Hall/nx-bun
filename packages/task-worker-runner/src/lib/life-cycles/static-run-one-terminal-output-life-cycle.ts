@@ -92,7 +92,7 @@ export class StaticRunOneTerminalOutputLifeCycle implements LifeCycle {
   endTasks(
     taskResults: { task: Task; status: TaskStatus; code: number }[]
   ): void {
-    for (let t of taskResults) {
+    for (const t of taskResults) {
       if (t.status === 'failure') {
         this.failedTasks.push(t.task);
       } else if (t.status === 'local-cache') {

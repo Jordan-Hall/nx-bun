@@ -1,4 +1,4 @@
-import type { BaseBun } from '../../utils/common-options'
+import type { BaseBun } from '../../utils/common-options';
 export interface RunExecutorSchema extends BaseBun {
   watch: boolean;
   hot: boolean;

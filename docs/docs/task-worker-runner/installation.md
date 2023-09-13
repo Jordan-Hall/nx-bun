@@ -27,4 +27,4 @@ After modify nx.json "tasksRunnerOptions" so the runner using @nx-bun/task-worke
       }
     }
   }
-  ```
+```

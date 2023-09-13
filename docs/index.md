@@ -16,6 +16,6 @@ hero:
       link: https://github.com/jordan-hall/nx-bun
 
 features:
-  - title: "@nx-bun/nx"
+  - title: '@nx-bun/nx'
     details: Creating bun applications and runtime
 ---

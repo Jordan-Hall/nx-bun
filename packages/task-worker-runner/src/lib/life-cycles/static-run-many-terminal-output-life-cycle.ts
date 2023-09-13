@@ -129,7 +129,7 @@ export class StaticRunManyTerminalOutputLifeCycle implements LifeCycle {
   endTasks(
     taskResults: { task: Task; status: TaskStatus; code: number }[]
   ): void {
-    for (let t of taskResults) {
+    for (const t of taskResults) {
       this.allCompletedTasks.set(t.task.id, t.task);
       if (t.status === 'failure') {
         this.failedTasks.push(t.task);

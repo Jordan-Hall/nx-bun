@@ -1,7 +1,7 @@
 import { parentPort } from 'node:worker_threads';
-import * as path from "node:path";
-import {ChildProcess, spawn} from "node:child_process";
-import {randomUUID} from "node:crypto";
+import * as path from 'node:path';
+import { ChildProcess, spawn } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import { createAsyncIterable } from '@nx/devkit/src/utils/async-iterable';
 import {
   ExecutorContext,
@@ -9,16 +9,19 @@ import {
   ProjectGraphProjectNode,
   readTargetOptions,
   logger,
-  runExecutor
+  runExecutor,
 } from '@nx/devkit';
-import {getRelativeDirectoryToProjectRoot} from "@nx/js/src/utils/get-main-file-dir";
+import { getRelativeDirectoryToProjectRoot } from '@nx/js/src/utils/get-main-file-dir';
 
-import {assertBunAvailable, executeCliAsync, isBunSubprocess, UnifiedChildProcess} from '../../utils/bun-cli';
-import {killCurrentProcess, Signal} from '../../utils/kill';
+import {
+  assertBunAvailable,
+  executeCliAsync,
+  isBunSubprocess,
+  UnifiedChildProcess,
+} from '../../utils/bun-cli';
+import { killCurrentProcess, Signal } from '../../utils/kill';
 import { RunExecutorSchema } from './schema';
-import {debounce} from "../../utils/debounce";
-
-
+import { debounce } from '../../utils/debounce';
 
 interface ActiveTask {
   id: string;
@@ -50,13 +53,16 @@ function getFileToRun(
     if (
       buildTargetExecutor === '@nx/js:tsc' ||
       buildTargetExecutor === '@nx/js:swc'
-      ) {
+    ) {
       const fileName = `${path.parse(buildOptions.main).name}.js`;
       outputFileName = path.join(
         getRelativeDirectoryToProjectRoot(buildOptions.main, project.data.root),
         fileName
       );
-    } else if (buildTargetExecutor === '@nx-bun/nx:build' || buildTargetExecutor.includes('../dist/packages/nx-bun:build')) {
+    } else if (
+      buildTargetExecutor === '@nx-bun/nx:build' ||
+      buildTargetExecutor.includes('../dist/packages/nx-bun:build')
+    ) {
       return path.join(context.root, buildOptions.entrypoints[0]);
     } else {
       outputFileName = `${path.parse(buildOptions.main).name}.js`;
@@ -66,15 +72,21 @@ function getFileToRun(
   return path.join(context.root, buildOptions.outputPath, outputFileName);
 }
 
-export default async function* bunRunExecutor(options: RunExecutorSchema, context: ExecutorContext) {
+export default async function* bunRunExecutor(
+  options: RunExecutorSchema,
+  context: ExecutorContext
+) {
   await assertBunAvailable();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const project = context.projectGraph?.nodes[context.projectName!];
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const buildTarget = parseTargetString(options.buildTarget, context.projectGraph!);
-  const projectBuildTargetConfig = project.data.targets?.[buildTarget.target]
+  const buildTarget = parseTargetString(
+    options.buildTarget,
+    context.projectGraph!
+  );
+  const projectBuildTargetConfig = project.data.targets?.[buildTarget.target];
   if (!projectBuildTargetConfig) {
     throw new Error(
       `Cannot find build target ${options.buildTarget} for project ${context.projectName}`
@@ -83,10 +95,14 @@ export default async function* bunRunExecutor(options: RunExecutorSchema, contex
 
   const buildTargetExecutor = projectBuildTargetConfig?.executor;
   if (!buildTargetExecutor) {
-    throw new Error(`Missing executor in build target ${options.buildTarget} for project ${context.projectName}`)
+    throw new Error(
+      `Missing executor in build target ${options.buildTarget} for project ${context.projectName}`
+    );
   }
 
-  const isBunBuildTargetExecutor = buildTargetExecutor === '@nx-bun/nx:build' || buildTargetExecutor.includes('../dist/packages/nx-bun:build');
+  const isBunBuildTargetExecutor =
+    buildTargetExecutor === '@nx-bun/nx:build' ||
+    buildTargetExecutor.includes('../dist/packages/nx-bun:build');
 
   const buildOptions: Record<string, unknown> = {
     ...readTargetOptions(buildTarget, context),
@@ -117,7 +133,7 @@ export default async function* bunRunExecutor(options: RunExecutorSchema, contex
 
     const debouncedProcessQueue = debounce(
       { delay: options.debounce ?? 1_000 },
-      processQueue,
+      processQueue
     );
 
     const addToQueue = async (
@@ -152,7 +168,15 @@ export default async function* bunRunExecutor(options: RunExecutorSchema, contex
           // Run the program
           // eslint-disable-next-line no-async-promise-executor
           task.promise = new Promise<void>(async (resolve, reject) => {
-            const runningBun = await executeCliAsync(['run', ...args, fileToRun], { stdio: 'pipe', stderr: 'inherit', stdin: 'pipe', stdout: 'inherit' });
+            const runningBun = await executeCliAsync(
+              ['run', ...args, fileToRun],
+              {
+                stdio: 'pipe',
+                stderr: 'inherit',
+                stdin: 'pipe',
+                stdout: 'inherit',
+              }
+            );
 
             task.childProcess = runningBun;
 
@@ -176,17 +200,21 @@ export default async function* bunRunExecutor(options: RunExecutorSchema, contex
                     logger.error(err);
                     if (!options.watch) done();
                     reject(err);
-                  }
+                  },
                 });
-              }
-              (runningBun.stdout as ReadableStream<Buffer>).pipeTo(writableStream('stdout'));
-              (runningBun.stderr as ReadableStream<Buffer>).pipeTo(writableStream('stderr'));
+              };
+              (runningBun.stdout as ReadableStream<Buffer>).pipeTo(
+                writableStream('stdout')
+              );
+              (runningBun.stderr as ReadableStream<Buffer>).pipeTo(
+                writableStream('stderr')
+              );
             } else {
               const textDecoder = new TextDecoder();
               runningBun.stdout.on('data', (data) => {
                 const textData = textDecoder.decode(data);
                 if (parentPort) {
-                  parentPort.postMessage({ type: 'stdout', message: textData })
+                  parentPort.postMessage({ type: 'stdout', message: textData });
                 } else {
                   logger.log(textData);
                 }
@@ -196,12 +224,15 @@ export default async function* bunRunExecutor(options: RunExecutorSchema, contex
                   const textData = textDecoder.decode(data);
 
                   if (parentPort) {
-                    parentPort.postMessage({ type: 'stderr', message: textData })
+                    parentPort.postMessage({
+                      type: 'stderr',
+                      message: textData,
+                    });
                   } else {
                     logger.log(textData);
                   }
                 }
-              }
+              };
               runningBun.stderr.on('data', handleStdErr);
               runningBun.once('exit', (code) => {
                 runningBun?.off('data', handleStdErr);
@@ -284,16 +315,17 @@ export default async function* bunRunExecutor(options: RunExecutorSchema, contex
   });
 }
 
-
-function getArgs(options: RunExecutorSchema, context: ExecutorContext): string[] {
+function getArgs(
+  options: RunExecutorSchema,
+  context: ExecutorContext
+): string[] {
   const args: string[] = [];
 
-  
   if (options.bun) {
     args.push('--bun');
   }
   if (options.tsconfig) {
-    args.push(`--tsconfig-override=${options.tsconfig}`)
+    args.push(`--tsconfig-override=${options.tsconfig}`);
   }
   if (options.smol) {
     args.push('--smol');

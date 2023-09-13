@@ -437,7 +437,7 @@ export async function createRunManyDynamicOutputRenderer({
   };
 
   lifeCycle.endTasks = (taskResults) => {
-    for (let t of taskResults) {
+    for (const t of taskResults) {
       totalCompletedTasks++;
       const matchingTaskRow = taskRows.find((r) => r.task.id === t.task.id);
       if (matchingTaskRow) {

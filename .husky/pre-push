@@ -1,0 +1,9 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+bun run format:check || {
+  echo "Make sure to run \`bun run format\` before pushing." >&2;
+  exit 1;
+}
+bun run documentation
+bun run check-lock-files

@@ -1,5 +1,9 @@
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { Tree, addProjectConfiguration, readProjectConfiguration } from '@nx/devkit';
+import {
+  Tree,
+  addProjectConfiguration,
+  readProjectConfiguration,
+} from '@nx/devkit';
 
 import update from './build-target-run';
 
@@ -18,12 +22,12 @@ describe('build-target-run migration', () => {
       targets: {
         foo: {
           executor: '@nx-bun/nx:run',
-          defaultConfiguration: "development",
+          defaultConfiguration: 'development',
           options: {
-            main: "apps/myapp/src/index.ts",
+            main: 'apps/myapp/src/index.ts',
             hot: true,
-            watch: true
-          }
+            watch: true,
+          },
         },
       },
     });
@@ -37,12 +41,12 @@ describe('build-target-run migration', () => {
       targets: {
         foo: {
           executor: '@nx-bun/nx:run',
-          defaultConfiguration: "development",
+          defaultConfiguration: 'development',
           options: {
             buildTarget: 'myapp:build',
             tsconfig: 'tsconfig.base.json',
             hot: true,
-            watch: true
+            watch: true,
           },
         },
       },
@@ -57,12 +61,12 @@ describe('build-target-run migration', () => {
       targets: {
         foo: {
           executor: '@nx-bun/nx:run',
-          defaultConfiguration: "development",
+          defaultConfiguration: 'development',
           options: {
-            main: "apps/myapp/src/index.ts",
+            main: 'apps/myapp/src/index.ts',
             hot: true,
-            watch: true
-          }
+            watch: true,
+          },
         },
       },
     });
@@ -77,12 +81,12 @@ describe('build-target-run migration', () => {
       targets: {
         foo: {
           executor: '@nx-bun/nx:run',
-          defaultConfiguration: "development",
+          defaultConfiguration: 'development',
           options: {
             buildTarget: 'myapp:build',
             tsconfig: 'apps/myapp/tsconfig.app.json',
             hot: true,
-            watch: true
+            watch: true,
           },
         },
       },

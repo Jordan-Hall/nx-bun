@@ -25,7 +25,7 @@ export class TaskOrchestrator {
   private tasksSchedule: TasksSchedule;
 
   // region internal state
-  private reverseTaskDeps:Record<string, string[]>;
+  private reverseTaskDeps: Record<string, string[]>;
   private completedTasks: {
     [id: string]: TaskStatus;
   } = {};
@@ -53,7 +53,7 @@ export class TaskOrchestrator {
       taskGraph,
       options
     );
-    this.reverseTaskDeps = calculateReverseDeps(this.taskGraph)
+    this.reverseTaskDeps = calculateReverseDeps(this.taskGraph);
     this.cache = new Cache(this.options);
     this.forkedProcessTaskRunner = new ForkedProcessTaskRunner(this.options);
   }
@@ -176,7 +176,7 @@ export class TaskOrchestrator {
 
     await this.preRunSteps(tasks, { groupId });
 
-    let results: {
+    const results: {
       task: Task;
       status: TaskStatus;
       terminalOutput?: string;
@@ -255,7 +255,7 @@ export class TaskOrchestrator {
     await this.preRunSteps([task], { groupId });
 
     // hash the task here
-    let results: {
+    const results: {
       task: Task;
       status: TaskStatus;
       terminalOutput?: string;

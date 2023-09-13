@@ -28,7 +28,7 @@ export class StoreRunInformationLifeCycle implements LifeCycle {
   ) {}
 
   startTasks(tasks: Task[]): void {
-    for (let t of tasks) {
+    for (const t of tasks) {
       this.timings[t.id] = {
         start: this.now(),
         end: undefined,
@@ -39,7 +39,7 @@ export class StoreRunInformationLifeCycle implements LifeCycle {
   endTasks(
     taskResults: Array<{ task: Task; status: TaskStatus; code: number }>
   ): void {
-    for (let tr of taskResults) {
+    for (const tr of taskResults) {
       if (tr.task.startTime) {
         this.timings[tr.task.id].start = new Date(
           tr.task.startTime

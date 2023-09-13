@@ -51,7 +51,7 @@ function sideNavGuide() {
         {
           text: 'Getting Started',
           link: '/guide/',
-        }
+        },
       ],
     },
   ];
@@ -116,7 +116,7 @@ function sideNavDocs() {
             {
               text: 'Installation',
               link: '/docs/task-worker-runner/installation',
-            }
+            },
           ],
         },
       ],

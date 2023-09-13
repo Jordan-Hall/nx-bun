@@ -10,7 +10,7 @@ import {
   Tree,
   updateJson,
 } from '@nx/devkit';
-import { FsTree } from 'nx/src/generators/tree'
+import { FsTree } from 'nx/src/generators/tree';
 import { CreateGeneratorSchema } from './schema';
 import { executeCliWithLogging } from '../../utils/bun-cli';
 import { join } from 'path';
@@ -29,30 +29,35 @@ export async function createGenerator(
   const tasks: GeneratorCallback[] = [];
 
   tasks.push(
-    await initGenerator(tree, {bunNXRuntime: false, forceBunInstall: false})
+    await initGenerator(tree, { bunNXRuntime: false, forceBunInstall: false })
   );
 
   const opts = await normalizedSchema(tree, options);
 
-  const args = createArgs(opts)
+  const args = createArgs(opts);
   await executeCliWithLogging(args, {
     stderr: 'inherit',
     stdin: 'inherit',
     stdio: 'inherit',
-    stdout: 'inherit'
-  })
-  rmSync(`${opts.projectRoot}/node_modules`, { force: true, recursive: true })
+    stdout: 'inherit',
+  });
+  rmSync(`${opts.projectRoot}/node_modules`, { force: true, recursive: true });
 
   const bunLockPath = `${opts.projectRoot}/bun.lockb`;
   if (tree.exists(bunLockPath)) {
-    tree.delete(bunLockPath)
+    tree.delete(bunLockPath);
   }
-  tree.delete(`${opts.projectRoot}/.gitignore`)
+  tree.delete(`${opts.projectRoot}/.gitignore`);
   // we hack the changes into the change logs of the tree
   for (const filePath of walkSync(opts.projectRoot)) {
     const content = readFileIfExisting(filePath);
 
-    ((tree as any).recordedChanges as Record<string, { content: Buffer | string, isDeleted: boolean, options: any }>)[(tree as any).rp(filePath)] = {
+    (
+      (tree as any).recordedChanges as Record<
+        string,
+        { content: Buffer | string; isDeleted: boolean; options: any }
+      >
+    )[(tree as any).rp(filePath)] = {
       content: Buffer.from(content),
       isDeleted: false,
       options,
@@ -60,8 +65,11 @@ export async function createGenerator(
   }
   if (tree.exists(`${opts.projectRoot}/tsconfig.json`)) {
     updateJson(tree, `${opts.projectRoot}/tsconfig.json`, (file) => {
-      file.extends = join(offsetFromRoot(opts.projectRoot), 'tsconfig.base.json')
-      return file
+      file.extends = join(
+        offsetFromRoot(opts.projectRoot),
+        'tsconfig.base.json'
+      );
+      return file;
     });
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -69,38 +77,43 @@ export async function createGenerator(
   let dependencies: Record<string, string> = {};
   let devDependencies: Record<string, string> = {};
   updateJson(tree, `${opts.projectRoot}/package.json`, (file) => {
-    scripts = file.scripts
-    dependencies = file.dependencies
-    devDependencies = file.devDependencies
-    file.dependencies = {}
-    file.devDependencies = {}
-    return file
+    scripts = file.scripts;
+    dependencies = file.dependencies;
+    devDependencies = file.devDependencies;
+    file.dependencies = {};
+    file.devDependencies = {};
+    return file;
   });
 
-  addDependenciesToPackageJson(tree, dependencies, devDependencies)
+  addDependenciesToPackageJson(tree, dependencies, devDependencies);
 
-  const scriptToRun = scripts.start ? scripts.start : scripts.dev ? scripts.dev : null;
+  const scriptToRun = scripts.start
+    ? scripts.start
+    : scripts.dev
+    ? scripts.dev
+    : null;
   if (scriptToRun) {
     const baseFileToRun = findFileToRun(tree, scriptToRun, opts.projectRoot);
     if (baseFileToRun) {
-      addProjectFromScript(tree, opts, baseFileToRun, 'serve')
+      addProjectFromScript(tree, opts, baseFileToRun, 'serve');
 
       if (opts.publishable) {
-        updateTsConfig(tree, { entryPoints: [joinPathFragments(opts.projectRoot, baseFileToRun)], importPath: opts.importPath })
+        updateTsConfig(tree, {
+          entryPoints: [joinPathFragments(opts.projectRoot, baseFileToRun)],
+          importPath: opts.importPath,
+        });
       }
-    
     }
   }
 
   if (process.env.NX_DRY_RUN) {
-    rmSync(opts.projectRoot, { force: true, recursive: true })
+    rmSync(opts.projectRoot, { force: true, recursive: true });
   }
 
   await formatFiles(tree);
 
   return runTasksInSerial(...tasks);
 }
-
 
 function* walkSync(dir) {
   const files = readdirSync(dir, { withFileTypes: true });
@@ -113,14 +126,12 @@ function* walkSync(dir) {
   }
 }
 
-function createArgs(
-  options: NormalizedSchema
-) {
+function createArgs(options: NormalizedSchema) {
   const args: string[] = ['create'];
   args.push(options.template);
-  args.push(options.projectRoot)
-  args.push('--no-git')
-  args.push('--no-install')
+  args.push(options.projectRoot);
+  args.push('--no-git');
+  args.push('--no-install');
   return args;
 }
 
@@ -129,20 +140,20 @@ async function normalizedSchema(tree: Tree, options: CreateGeneratorSchema) {
   const projectDirectory = options.directory
     ? `${names(options.directory).fileName}/${name}`
     : name;
-    const {
-      projectName,
-      names: projectNames,
-      projectRoot,
-      importPath,
-    } = await determineProjectNameAndRootOptions(tree, {
-      name: options.name,
-      projectType: 'application',
-      directory: options.directory,
-      importPath: options.importPath,
-      projectNameAndRootFormat: options.projectNameAndRootFormat,
-      rootProject: options.rootProject,
-      callingGenerator: '@nx-bun/nx:create'
-    });
+  const {
+    projectName,
+    names: projectNames,
+    projectRoot,
+    importPath,
+  } = await determineProjectNameAndRootOptions(tree, {
+    name: options.name,
+    projectType: 'application',
+    directory: options.directory,
+    importPath: options.importPath,
+    projectNameAndRootFormat: options.projectNameAndRootFormat,
+    rootProject: options.rootProject,
+    callingGenerator: '@nx-bun/nx:create',
+  });
 
   const layout = getWorkspaceLayout(tree);
 
@@ -154,13 +165,16 @@ async function normalizedSchema(tree: Tree, options: CreateGeneratorSchema) {
     projectNames,
     layout,
     projectRoot,
-    importPath
-  }
+    importPath,
+  };
 }
 
 function findFileToRun(host: Tree, script: string, projectRoot: string) {
-  const afterRun = script.split('run')[1].split(' ').filter(s => s.length);
-  return afterRun.find(path => host.exists(join(projectRoot, path)));
+  const afterRun = script
+    .split('run')[1]
+    .split(' ')
+    .filter((s) => s.length);
+  return afterRun.find((path) => host.exists(join(projectRoot, path)));
 }
 
 export default createGenerator;

@@ -34,7 +34,6 @@ packages:
     # if package is not available locally, proxy requests to 'yarn' registry
     proxy: npmjs
 
-
 # log settings
 logs:
   type: stdout
