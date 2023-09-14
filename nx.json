@@ -40,5 +40,8 @@
       "!{projectRoot}/test-setup.[jt]s"
     ],
     "sharedGlobals": []
+  },
+  "cli": {
+    "packageManager": "bun"
   }
 }

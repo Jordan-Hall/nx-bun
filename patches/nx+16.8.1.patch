@@ -1,5 +1,18 @@
+diff --git a/node_modules/nx/schemas/nx-schema.json b/node_modules/nx/schemas/nx-schema.json
+index 091b7d0..227e128 100644
+--- a/node_modules/nx/schemas/nx-schema.json
++++ b/node_modules/nx/schemas/nx-schema.json
+@@ -201,7 +201,7 @@
+         "packageManager": {
+           "type": "string",
+           "description": "The default package manager to use.",
+-          "enum": ["yarn", "pnpm", "npm"]
++          "enum": ["yarn", "pnpm", "npm", "bun"]
+         },
+         "defaultCollection": {
+           "type": "string",
 diff --git a/node_modules/nx/src/plugins/js/index.js b/node_modules/nx/src/plugins/js/index.js
-index f6bdc27..54c9323 100644
+index f6bdc27..78b59b2 100644
 --- a/node_modules/nx/src/plugins/js/index.js
 +++ b/node_modules/nx/src/plugins/js/index.js
 @@ -14,6 +14,7 @@ const file_hasher_1 = require("../../hasher/file-hasher");
@@ -18,7 +31,7 @@ index f6bdc27..54c9323 100644
 +        const lockFileContents =
 +            packageManager !== 'bun'
 +                ? (0, fs_1.readFileSync)(lockFilePath).toString()
-+                : child_process_1.execSync(`./${lockFilePath}`).toString();
++                : child_process_1.execSync(lockFilePath).toString();
          const lockFileHash = getLockFileHash(lockFileContents);
          if (!lockFileNeedsReprocessing(lockFileHash)) {
              const nodes = readCachedParsedLockFile().externalNodes;
@@ -30,12 +43,12 @@ index f6bdc27..54c9323 100644
 +        const lockFileContents =
 +            packageManager !== 'bun'
 +                ? (0, fs_1.readFileSync)(lockFilePath).toString()
-+                : child_process_1.execSync(`./${lockFilePath}`).toString();
++                : child_process_1.execSync(lockFilePath).toString();
          const lockFileHash = getLockFileHash(lockFileContents);
          if (!lockFileNeedsReprocessing(lockFileHash)) {
              lockfileDependencies = readCachedParsedLockFile().dependencies ?? [];
 diff --git a/node_modules/nx/src/plugins/js/lock-file/lock-file.js b/node_modules/nx/src/plugins/js/lock-file/lock-file.js
-index e70a5f4..6315881 100644
+index e70a5f4..40df95f 100644
 --- a/node_modules/nx/src/plugins/js/lock-file/lock-file.js
 +++ b/node_modules/nx/src/plugins/js/lock-file/lock-file.js
 @@ -19,10 +19,12 @@ const fileutils_1 = require("../../../utils/fileutils");
@@ -85,7 +98,17 @@ index e70a5f4..6315881 100644
      throw new Error(`Unknown package manager ${packageManager} or lock file missing`);
  }
  exports.lockFileExists = lockFileExists;
-@@ -133,6 +147,12 @@ function createLockFile(packageJson, graph, packageManager = (0, package_manager
+@@ -106,6 +120,9 @@ function getLockFileName(packageManager) {
+     if (packageManager === 'npm') {
+         return NPM_LOCK_FILE;
+     }
++    if (packageManager === 'bun') {
++        return BUN_LOCK_FILE;
++    }
+     throw new Error(`Unknown package manager: ${packageManager}`);
+ }
+ exports.getLockFileName = getLockFileName;
+@@ -133,6 +150,12 @@ function createLockFile(packageJson, graph, packageManager = (0, package_manager
              const prunedGraph = (0, project_graph_pruning_1.pruneProjectGraph)(graph, packageJson);
              return (0, npm_parser_1.stringifyNpmLockfile)(prunedGraph, content, normalizedPackageJson);
          }
