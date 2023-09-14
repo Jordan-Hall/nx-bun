@@ -1,0 +1,193 @@
+diff --git a/node_modules/nx/src/plugins/js/index.js b/node_modules/nx/src/plugins/js/index.js
+index f6bdc27..54c9323 100644
+--- a/node_modules/nx/src/plugins/js/index.js
++++ b/node_modules/nx/src/plugins/js/index.js
+@@ -14,6 +14,7 @@ const file_hasher_1 = require("../../hasher/file-hasher");
+ const package_manager_1 = require("../../utils/package-manager");
+ const workspace_root_1 = require("../../utils/workspace-root");
+ const versions_1 = require("../../utils/versions");
++const child_process_1 = require("child_process");
+ exports.name = 'nx-js-graph-plugin';
+ let parsedLockFile = {};
+ exports.createNodes = [
+@@ -30,7 +31,10 @@ exports.createNodes = [
+             return {};
+         }
+         const lockFilePath = (0, path_1.join)(workspace_root_1.workspaceRoot, lockFile);
+-        const lockFileContents = (0, fs_1.readFileSync)(lockFilePath).toString();
++        const lockFileContents =
++            packageManager !== 'bun'
++                ? (0, fs_1.readFileSync)(lockFilePath).toString()
++                : child_process_1.execSync(`./${lockFilePath}`).toString();
+         const lockFileHash = getLockFileHash(lockFileContents);
+         if (!lockFileNeedsReprocessing(lockFileHash)) {
+             const nodes = readCachedParsedLockFile().externalNodes;
+@@ -55,7 +59,10 @@ const createDependencies = (ctx) => {
+         (0, lock_file_1.lockFileExists)(packageManager) &&
+         parsedLockFile) {
+         const lockFilePath = (0, path_1.join)(workspace_root_1.workspaceRoot, (0, lock_file_1.getLockFileName)(packageManager));
+-        const lockFileContents = (0, fs_1.readFileSync)(lockFilePath).toString();
++        const lockFileContents =
++            packageManager !== 'bun'
++                ? (0, fs_1.readFileSync)(lockFilePath).toString()
++                : child_process_1.execSync(`./${lockFilePath}`).toString();
+         const lockFileHash = getLockFileHash(lockFileContents);
+         if (!lockFileNeedsReprocessing(lockFileHash)) {
+             lockfileDependencies = readCachedParsedLockFile().dependencies ?? [];
+diff --git a/node_modules/nx/src/plugins/js/lock-file/lock-file.js b/node_modules/nx/src/plugins/js/lock-file/lock-file.js
+index e70a5f4..6315881 100644
+--- a/node_modules/nx/src/plugins/js/lock-file/lock-file.js
++++ b/node_modules/nx/src/plugins/js/lock-file/lock-file.js
+@@ -19,10 +19,12 @@ const fileutils_1 = require("../../../utils/fileutils");
+ const YARN_LOCK_FILE = 'yarn.lock';
+ const NPM_LOCK_FILE = 'package-lock.json';
+ const PNPM_LOCK_FILE = 'pnpm-lock.yaml';
+-exports.LOCKFILES = [YARN_LOCK_FILE, NPM_LOCK_FILE, PNPM_LOCK_FILE];
++const BUN_LOCK_FILE = 'bun.lockb';
++exports.LOCKFILES = [YARN_LOCK_FILE, NPM_LOCK_FILE, PNPM_LOCK_FILE, BUN_LOCK_FILE];
+ const YARN_LOCK_PATH = (0, path_1.join)(workspace_root_1.workspaceRoot, YARN_LOCK_FILE);
+ const NPM_LOCK_PATH = (0, path_1.join)(workspace_root_1.workspaceRoot, NPM_LOCK_FILE);
+ const PNPM_LOCK_PATH = (0, path_1.join)(workspace_root_1.workspaceRoot, PNPM_LOCK_FILE);
++const BUN_LOCK_PATH = (0, path_1.join)(workspace_root_1.workspaceRoot, BUN_LOCK_FILE);
+ /**
+  * Parses lock file and maps dependencies and metadata to {@link LockFileGraph}
+  */
+@@ -38,6 +40,11 @@ function getLockFileNodes(packageManager, contents, lockFileHash) {
+         if (packageManager === 'npm') {
+             return (0, npm_parser_1.getNpmLockfileNodes)(contents, lockFileHash);
+         }
++        if (packageManager === 'bun') {
++            // bun uses yarn v1 for the file format
++            const packageJson = (0, fileutils_1.readJsonFile)('package.json');
++            return (0, yarn_parser_1.getYarnLockfileNodes)(contents, lockFileHash, packageJson);
++        }
+     }
+     catch (e) {
+         if (!isPostInstallProcess()) {
+@@ -65,6 +72,10 @@ function getLockFileDependencies(packageManager, contents, lockFileHash, project
+         if (packageManager === 'npm') {
+             return (0, npm_parser_1.getNpmLockfileDependencies)(contents, lockFileHash, projectGraph);
+         }
++        if (packageManager === 'bun') {
++            // bun uses yarn v1 for the file format
++            return (0, yarn_parser_1.getYarnLockfileDependencies)(contents, lockFileHash, projectGraph);
++        }
+     }
+     catch (e) {
+         if (!isPostInstallProcess()) {
+@@ -88,6 +99,9 @@ function lockFileExists(packageManager) {
+     if (packageManager === 'npm') {
+         return (0, fs_1.existsSync)(NPM_LOCK_PATH);
+     }
++    if (packageManager === 'bun') {
++        return (0, fs_1.existsSync)(BUN_LOCK_PATH);
++    }
+     throw new Error(`Unknown package manager ${packageManager} or lock file missing`);
+ }
+ exports.lockFileExists = lockFileExists;
+@@ -133,6 +147,12 @@ function createLockFile(packageJson, graph, packageManager = (0, package_manager
+             const prunedGraph = (0, project_graph_pruning_1.pruneProjectGraph)(graph, packageJson);
+             return (0, npm_parser_1.stringifyNpmLockfile)(prunedGraph, content, normalizedPackageJson);
+         }
++        if (packageManager === 'bun') {
++            output_1.output.log({
++              title:
++                "Unable to create bun lock files. Run bun install it's just as quick",
++            });
++          }
+     }
+     catch (e) {
+         if (!isPostInstallProcess()) {
+diff --git a/node_modules/nx/src/utils/command-line-utils.js b/node_modules/nx/src/utils/command-line-utils.js
+index 9aaed34..a7c31c5 100644
+--- a/node_modules/nx/src/utils/command-line-utils.js
++++ b/node_modules/nx/src/utils/command-line-utils.js
+@@ -209,7 +209,7 @@ function getMergeBase(base, head = 'HEAD') {
+     }
+     catch {
+         try {
+-            return (0, child_process_1.execSync)(`git merge-base --fork-point "${base}" "${head}"`, {
++            return (0, child_process_1.execSync)(`git merge-base git diff --name-only --no-renames --relative "master" "HEAD" "${base}" "${head}"`, {
+                 maxBuffer: file_utils_1.TEN_MEGABYTES,
+                 cwd: workspace_root_1.workspaceRoot,
+                 stdio: 'pipe',
+diff --git a/node_modules/nx/src/utils/package-manager.d.ts b/node_modules/nx/src/utils/package-manager.d.ts
+index 2152d13..b3a61e5 100644
+--- a/node_modules/nx/src/utils/package-manager.d.ts
++++ b/node_modules/nx/src/utils/package-manager.d.ts
+@@ -1,4 +1,4 @@
+-export type PackageManager = 'yarn' | 'pnpm' | 'npm';
++export type PackageManager = 'yarn' | 'pnpm' | 'npm' | 'bun';
+ export interface PackageManagerCommands {
+     preInstall?: string;
+     install: string;
+diff --git a/node_modules/nx/src/utils/package-manager.js b/node_modules/nx/src/utils/package-manager.js
+index 716f0d5..9f19288 100644
+--- a/node_modules/nx/src/utils/package-manager.js
++++ b/node_modules/nx/src/utils/package-manager.js
+@@ -23,7 +23,9 @@ function detectPackageManager(dir = '') {
+             ? 'yarn'
+             : (0, fs_1.existsSync)((0, path_1.join)(dir, 'pnpm-lock.yaml'))
+                 ? 'pnpm'
+-                : 'npm'));
++                : (0, fs_1.existsSync)((0, path_1.join)(dir, 'bun.lockb'))
++                    ? 'bun'
++                    : 'npm'));
+ }
+ exports.detectPackageManager = detectPackageManager;
+ /**
+@@ -91,6 +93,18 @@ function getPackageManagerCommand(packageManager = detectPackageManager(), root
+                 list: 'npm ls',
+             };
+         },
++        bun: () => {
++            return {
++              install: 'bun install',
++              ciInstall: 'bun install --frozen-lockfile',
++              add: 'bun add',
++              addDev: 'bun add -D',
++              rm: 'bun remove',
++              exec: 'bunx',
++              run: (script, args) => `bun ${script} ${args}`,
++              list: 'bun pm ls',
++            };
++        },
+     };
+     return commands[packageManager]();
+ }
+@@ -260,12 +274,16 @@ async function resolvePackageVersionUsingInstallation(packageName, version) {
+ exports.resolvePackageVersionUsingInstallation = resolvePackageVersionUsingInstallation;
+ async function packageRegistryView(pkg, version, args) {
+     let pm = detectPackageManager();
+-    if (pm === 'yarn') {
++    if (pm === 'yarn' || pm === 'bun') {
+         /**
+          * yarn has `yarn info` but it behaves differently than (p)npm,
+          * which makes it's usage unreliable
+          *
+          * @see https://github.com/nrwl/nx/pull/9667#discussion_r842553994
++         *
++         * inregards to bun. Bun is highly modelled after yarn v1
++         * bun info is a "subcommand reserved for future use by Bun."
++         * currently nothing like npm view/list exists
+          */
+         pm = 'npm';
+     }
+@@ -275,13 +293,16 @@ async function packageRegistryView(pkg, version, args) {
+ exports.packageRegistryView = packageRegistryView;
+ async function packageRegistryPack(cwd, pkg, version) {
+     let pm = detectPackageManager();
+-    if (pm === 'yarn') {
++    if (pm === 'yarn' || pm === 'bun') {
+         /**
+          * `(p)npm pack` will download a tarball of the specified version,
+          * whereas `yarn` pack creates a tarball of the active workspace, so it
+          * does not work for getting the content of a library.
+          *
+          * @see https://github.com/nrwl/nx/pull/9667#discussion_r842553994
++         * 
++         * bun doesn't current support pack
++         * 
+          */
+         pm = 'npm';
+     }
