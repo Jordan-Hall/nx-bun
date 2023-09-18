@@ -1,14 +1,3 @@
-diff --git a/node_modules/nx/bin/nx.js b/node_modules/nx/bin/nx.js
-index f9b3be0..6ff2d93 100755
---- a/node_modules/nx/bin/nx.js
-+++ b/node_modules/nx/bin/nx.js
-@@ -1,5 +1,6 @@
- #!/usr/bin/env node
- "use strict";
-+setTimeout(() => {}, 1000);
- Object.defineProperty(exports, "__esModule", { value: true });
- const find_workspace_root_1 = require("../src/utils/find-workspace-root");
- const chalk = require("chalk");
 diff --git a/node_modules/nx/schemas/nx-schema.json b/node_modules/nx/schemas/nx-schema.json
 index 091b7d0..227e128 100644
 --- a/node_modules/nx/schemas/nx-schema.json
