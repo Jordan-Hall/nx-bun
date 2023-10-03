@@ -5,7 +5,9 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@nx/devkit": ">16.8.0 <17"
+  },
   "repository": {
     "url": "https://github.com/Jordan-Hall/nx-bun/tree/master/packages/nx-bun",
     "type": "git"

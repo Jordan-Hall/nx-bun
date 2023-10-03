@@ -7,5 +7,5 @@ export interface TestExecutorSchema {
   smol: boolean;
   config?: string;
   bun: boolean;
-  tsconfig?: string;
+  tsConfig?: string;
 } // eslint-disable-line

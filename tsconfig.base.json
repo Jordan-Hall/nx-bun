@@ -16,10 +16,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@nx-bun/task-worker-runner": [
-        "packages/task-worker-runner/src/index.ts"
-      ],
-      "@nx-bun/nx": ["packages/nx-bun/src/index.ts"]
+      "@nx-bun/nx": ["packages/nx-bun/src/index.ts"],
+      "@nx-bun/task-worker-runner": ["packages/task-worker-runner/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

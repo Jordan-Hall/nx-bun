@@ -54,7 +54,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
         'dist',
         opts.projectRoot ? opts.name : opts.projectRoot
       ),
-      tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
+      tsConfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
       smol: false,
       bun: true,
     },
@@ -65,7 +65,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     defaultConfiguration: 'development',
     options: {
       buildTarget: `${opts.projectName}:build`,
-      tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
+      tsConfig: joinPathFragments(opts.projectRoot, 'tsconfig.app.json'),
       watch: true,
       hot: true,
       bun: true,
@@ -78,7 +78,7 @@ export async function appGenerator(tree: Tree, options: AppGeneratorSchema) {
     options: {
       smol: false,
       bail: true,
-      tsconfig: joinPathFragments(opts.projectRoot, 'tsconfig.json'),
+      tsConfig: joinPathFragments(opts.projectRoot, 'tsconfig.json'),
       bun: true,
     },
   };

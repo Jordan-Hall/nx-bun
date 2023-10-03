@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "ConvertToBun",
+  "title": "",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "Project/Library name.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the library?",
+      "pattern": "^[a-zA-Z].*$"
+    },
+    "targets": {
+      "type": "array",
+      "description": "List of targets to convert.",
+      "items": {
+        "type": "string",
+        "description": "Target to convert."
+      },
+      "default": ["build"]
+    },
+    "customConversionRegistry": {
+      "type": "array",
+      "description": "List of allt he conversion registry so you can use custom or unoffical conversion",
+      "items": {
+        "type": "string",
+        "description": "npm package name of the conversion function"
+      },
+      "default": []
+    }
+  },
+  "required": ["project"]
+}

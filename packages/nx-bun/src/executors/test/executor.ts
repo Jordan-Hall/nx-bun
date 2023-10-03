@@ -127,8 +127,8 @@ function createArgs(options: TestExecutorNormalizedSchema) {
   if (options.config) {
     args.push(`-c ${options.config}`);
   }
-  if (options.tsconfig) {
-    args.push(`--tsconfig-override=${options.tsconfig}`);
+  if (options.tsConfig) {
+    args.push(`--tsconfig-override=${options.tsConfig}`);
   }
 
   if (typeof options.bail === 'boolean') {

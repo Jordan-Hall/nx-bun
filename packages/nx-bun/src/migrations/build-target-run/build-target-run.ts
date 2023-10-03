@@ -24,7 +24,7 @@ export default async function update(tree: Tree) {
     projectConfig.targets[
       targetName
     ].options.buildTarget = `${projectConfig.name}:build`;
-    projectConfig.targets[targetName].options.tsconfig = tree.exists(
+    projectConfig.targets[targetName].options.tsConfig = tree.exists(
       appTsConfigPath
     )
       ? appTsConfigPath

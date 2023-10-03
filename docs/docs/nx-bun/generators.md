@@ -293,3 +293,47 @@ Create node application at the root of the workspace
 Type: `string`
 
 Add tags to the library (used for linting).
+
+## @nx-bun/nx-bun:convert-to-bun
+
+Convert to Bun
+
+### Usage
+
+```bash
+nx generate convert-to-bun ...
+```
+
+By default, Nx will search for `convert-to-bun` in the default collection provisioned in nx.json.
+
+You can specify the collection explicitly as follows:
+
+```bash
+nx g @nx-bun/nx-bun:convert-to-bun ...
+```
+
+Show what will be generated without writing to disk:
+
+```bash
+nx g convert-to-bun ... --dry-run
+```
+
+### Options
+
+#### project (_**required**_)
+
+Type: `string`
+
+Project/Library name.
+
+#### customConversionRegistry
+
+Type: `array`
+
+List of allt he conversion registry so you can use custom or unoffical conversion
+
+#### targets
+
+Type: `array`
+
+List of targets to convert.

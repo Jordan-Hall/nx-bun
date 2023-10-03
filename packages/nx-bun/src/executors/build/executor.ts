@@ -144,8 +144,8 @@ function createArgs(
     args.push(`-c ${options.config}`);
   }
 
-  if (options.tsconfig) {
-    args.push(`--tsconfig-override=${options.tsconfig}`);
+  if (options.tsConfig) {
+    args.push(`--tsconfig-override=${options.tsConfig}`);
   }
 
   if (options.entrypoints) {
