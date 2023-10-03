@@ -96,7 +96,7 @@
       "type": "string",
       "description": "Config file to load bun from (e.g. -c bunfig.toml"
     },
-    "tsconfig": {
+    "tsConfig": {
       "type": "string",
       "description": "Load tsconfig from path instead of cwd/tsconfig.json"
     },

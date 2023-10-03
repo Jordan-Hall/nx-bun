@@ -71,9 +71,7 @@ export async function libGenerator(tree: Tree, options: LibGeneratorSchema) {
   const entryPoints = [joinPathFragments(opts.projectRoot, 'src', 'index.ts')];
 
   createFiles(tree, opts);
-  if (opts.publishable) {
-    tasks.push(updateProject(tree, opts, entryPoints));
-  }
+  tasks.push(updateProject(tree, opts, entryPoints));
   await formatFiles(tree);
 
   return runTasksInSerial(...tasks);
@@ -205,7 +203,7 @@ function updateProject(
         'dist',
         options.projectRoot ? options.name : options.projectRoot
       ),
-      tsconfig: joinPathFragments(options.projectRoot, `tsconfig.lib.json`),
+      tsConfig: joinPathFragments(options.projectRoot, `tsconfig.lib.json`),
       smol: false,
       bun: true,
     },

@@ -44,7 +44,7 @@ describe('build-target-run migration', () => {
           defaultConfiguration: 'development',
           options: {
             buildTarget: 'myapp:build',
-            tsconfig: 'tsconfig.base.json',
+            tsConfig: 'tsconfig.base.json',
             hot: true,
             watch: true,
           },
@@ -84,7 +84,7 @@ describe('build-target-run migration', () => {
           defaultConfiguration: 'development',
           options: {
             buildTarget: 'myapp:build',
-            tsconfig: 'apps/myapp/tsconfig.app.json',
+            tsConfig: 'apps/myapp/tsconfig.app.json',
             hot: true,
             watch: true,
           },

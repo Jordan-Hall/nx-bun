@@ -4,11 +4,20 @@
       "version": "0.2.1",
       "description": "build-target-run",
       "implementation": "./src/migrations/build-target-run/build-target-run"
+    },
+    "tsconfig-name": {
+      "version": "1.0.1",
+      "description": "tsconfig-name",
+      "implementation": "./src/migrations/tsconfig-name/tsconfig-name"
     }
   },
   "packageJsonUpdates": {
     "0.2.1": {
       "version": "0.2.1",
+      "packages": {}
+    },
+    "1.0.1": {
+      "version": "1.0.1",
       "packages": {}
     }
   }

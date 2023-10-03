@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/example-app",
-        "tsconfig": "packages/example-app/tsconfig.app.json",
+        "tsConfig": "packages/example-app/tsconfig.app.json",
         "entrypoints": ["packages/example-app/src/main.ts"],
         "assets": []
       }

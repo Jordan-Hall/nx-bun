@@ -42,7 +42,7 @@ Type: `boolean`
 
 In memory-constrained environments, use the smol flag to reduce memory usage at a cost to performance.
 
-#### tsconfig
+#### tsConfig
 
 Type: `string`
 
@@ -156,7 +156,7 @@ Possible values: `bun`, `node`, `browser`
 
 The target environment for the bundler.
 
-#### tsconfig
+#### tsConfig
 
 Type: `string`
 
@@ -220,7 +220,7 @@ Type: `number`
 
 specify a per-test timeout in milliseconds. If a test times out, it will be marked as failed. The default value is 5000.
 
-#### tsconfig
+#### tsConfig
 
 Type: `string`
 
