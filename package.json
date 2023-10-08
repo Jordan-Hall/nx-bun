@@ -87,7 +87,7 @@
     "nx.json": [
       "bun run format --uncommitted"
     ],
-    "*.{js,json,css,scss,md,ts,html,graphql}": [
+    "*.{js,json,css,scss,ts,html,graphql}": [
       "bun run format --uncommitted"
     ]
   },
