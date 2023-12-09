@@ -9,13 +9,6 @@
         "config": ".verdaccio/config.yml",
         "storage": "tmp/local-registry/storage"
       }
-    },
-    "version": {
-      "executor": "@jscutlery/semver:version",
-      "options": {
-        "preset": "conventional",
-        "versionTagPrefix": "v"
-      }
     }
   }
 }
