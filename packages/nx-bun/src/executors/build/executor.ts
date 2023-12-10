@@ -120,11 +120,13 @@ export default async function* bundleExecutor(
         runningBun.exited.then((code) => {
           console.log(`Build completed for  ${context.projectName}`);
           next({ success: code === 0 });
+          done();
         });
       } else {
         runningBun.on('exit', (code) => {
           console.log(`Build completed for  ${context.projectName}`);
           next({ success: code === 0 });
+          done();
         });
       }
     });
