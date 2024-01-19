@@ -36,7 +36,7 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "preset": "conventional",
-        "postTargets": ["nx-bun:npm", "nx-bun:github"],
+        "postTargets": ["nx-bun:build", "nx-bun:npm", "nx-bun:github"],
         "versionTagPrefix": "v"
       }
     },
@@ -50,8 +50,10 @@
     "npm": {
       "executor": "ngx-deploy-npm:deploy",
       "options": {
-        "access": "public"
-      }
+        "access": "public",
+        "distFolderPath": "dist/packages/task-worker-runner"
+      },
+      "dependsOn": ["build"]
     }
   },
   "tags": []
