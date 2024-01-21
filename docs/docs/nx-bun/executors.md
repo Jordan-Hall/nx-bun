@@ -76,7 +76,7 @@ Type: `string`
 
 The output directory for the bundled files.
 
-#### complie
+#### compile
 
 Default: `false`
 

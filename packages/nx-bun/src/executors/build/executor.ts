@@ -14,7 +14,7 @@ export default async function* bundleExecutor(
   context: ExecutorContext
 ) {
   await assertBunAvailable();
-  if (globalThis.Bun !== undefined && !options.complie) {
+  if (globalThis.Bun !== undefined && !options.compile) {
     const result = await Bun.build({
       entrypoints: options.entrypoints,
       define: options.define,
@@ -174,18 +174,18 @@ function createArgs(
     args.push(`--outdir=./${options.outputPath}`);
   }
 
-  if (options.complie) {
-    args.push('--complie');
+  if (options.compile) {
+    args.push('--compile');
   }
   if (options.plugins) {
     console.warn(
-      `plugin is only support with --bun flag, and not in conjuction with --complie`
+      `plugin is only support with --bun flag, and not in conjuction with --compile`
     );
   }
 
   if (options.publicPath) {
     console.warn(
-      `publicPath is only support with --bun flag, and not in conjuction with --complie`
+      `publicPath is only support with --bun flag, and not in conjuction with --compile`
     );
   }
 

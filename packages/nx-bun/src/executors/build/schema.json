@@ -100,7 +100,7 @@
       "type": "string",
       "description": "Load tsconfig from path instead of cwd/tsconfig.json"
     },
-    "complie": {
+    "compile": {
       "type": "boolean",
       "description": "Bun supports \"compiling\" a JavaScript/TypeScript entrypoint into a standalone executable. This executable contains a copy of the Bun binary.",
       "default": false
