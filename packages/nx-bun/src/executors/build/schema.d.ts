@@ -19,5 +19,5 @@ export interface BundleExecutorSchema extends BaseBun {
       };
   publicPath?: string;
   define?: { [key: string]: string };
-  complie?: boolean;
+  compile?: boolean;
 } // eslint-disable-line
