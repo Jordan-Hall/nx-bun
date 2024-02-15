@@ -8,7 +8,7 @@ https://jordan-hall.github.io/nx-bun/
 
 PRs, ideas and discussions accepted. Take a look at [the contributing file](CONTRIBUTING.md)!
 
-## Speical thanks to ✨
+## Special thanks to ✨
 
 Thanks goes to these wonderful people and repo ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
